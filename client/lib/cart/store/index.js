@@ -129,6 +129,10 @@ CartStore.dispatchToken = Dispatcher.register( function( payload ) {
 		case UpgradesActionTypes.CART_ITEM_REMOVE:
 			update( cartItems.removeItemAndDependencies( cartItem, CartStore.get() ) );
 			break;
+
+		case UpgradesActionTypes.SET_CART_ITEM_VOLUME:
+			update( cartItems.setVolume( cartItem, action.volume ) );
+			break;
 	}
 } );
 

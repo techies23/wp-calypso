@@ -654,6 +654,21 @@ function getIncludedDomain( cartItem ) {
 	return cartItem.extra && cartItem.extra.includedDomain;
 }
 
+function setVolume( cartItem, volume ) {
+	function setItemVolume( items ) {
+		return items.map( item => {
+			if ( item.product_id === cartItem.product_id && item.meta === cartItem.meta ) {
+				return extend( {}, item, { volume } );
+			}
+			return item;
+		} );
+	}
+
+	return function( cart ) {
+		return React.addons.update( cart, { products: { $apply: setItemVolume } } );
+	};
+}
+
 module.exports = {
 	add,
 	addPrivacyToAllDomains,
@@ -690,6 +705,8 @@ module.exports = {
 	hasPlan,
 	hasProduct,
 	hasRenewalItem,
+	isMonthlyPricingABTestParticipant: isMonthlyPricingABTestParticipant
+	setVolume: setVolume
 	noAdsItem,
 	planItem,
 	premiumPlan,
