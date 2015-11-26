@@ -63,6 +63,7 @@
 		"upgrades/domain-management/site-redirect": true,
 		"upgrades/domain-management/transfer": false,
 		"upgrades/domain-search": true,
+		"upgrades/cart/multi-year-domain": false,
 		"muse": true,
 		"olark": true,
 		"olark_use_wpcom_configuration": true,
