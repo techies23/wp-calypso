@@ -27,8 +27,6 @@ const layoutFocus = require( 'lib/layout-focus' ),
 	stats = require( 'reader/stats' ),
 	Gridicon = require( 'components/gridicon' ),
 	discoverHelper = require( 'reader/discover/helper' ),
-	Button = require( 'components/button' ),
-	Count = require( 'components/count' ),
 	config = require( 'config' ),
 	SidebarMenu = require( './menu' );
 
@@ -144,7 +142,6 @@ module.exports = React.createClass( {
 	highlightNewList: function( list ) {
 		list = ListStore.get( list.owner, list.slug );
 		window.location.href = url.resolve( 'https://wordpress.com', url.resolve( list.URL, 'edit' ) );
-		ReactDom.findDOMNode( this.refs.menuAddInput ).value = '';
 	},
 
 	highlightNewTag: function( tag ) {
@@ -152,7 +149,6 @@ module.exports = React.createClass( {
 			page( '/tag/' + tag.slug );
 			window.scrollTo( 0, 0 );
 		} );
-		ReactDom.findDOMNode( this.refs.menuAddInput ).value = '';
 	},
 
 	createList: function( list ) {
@@ -179,7 +175,7 @@ module.exports = React.createClass( {
 	renderLists: function() {
 		if ( ! this.state.lists ) {
 			return (
-				[ <li className="sidebar-menu__empty">{ this.translate( 'Collect sites together by adding a\xa0list.' ) }</li> ]
+				[ <li key="empty" className="sidebar-menu__empty">{ this.translate( 'Collect sites together by adding a\xa0list.' ) }</li> ]
 			);
 		}
 
@@ -224,7 +220,7 @@ module.exports = React.createClass( {
 	renderTags: function() {
 		if ( ! this.state.tags || this.state.tags.length === 0 ) {
 			return (
-				[ <li className="sidebar-menu__empty">{ this.translate( 'Finds relevant posts by adding a\xa0tag.' ) }</li> ]
+				[ <li key="empty" className="sidebar-menu__empty">{ this.translate( 'Finds relevant posts by adding a\xa0tag.' ) }</li> ]
 			);
 		}
 
@@ -280,16 +276,8 @@ module.exports = React.createClass( {
 	render: function() {
 		let followingEditLink = this.getFollowingEditLink();
 
-		var tagCount = 0,
-			listCount = 0;
-
-		if ( typeof this.state.tags !== 'undefined' && this.state.tags !== null && this.state.tags.length > 0 ) {
-			tagCount = this.state.tags.length;
-		}
-
-		if ( typeof this.state.lists !== 'undefined' && this.state.lists !== null && this.state.lists.length > 0 ) {
-			listCount = this.state.lists.length;
-		}
+		const tagCount = this.state.tags ? this.state.tags.length : 0,
+			listCount = this.state.lists ? this.state.lists.length : 0;
 
 		return (
 			<ul className="wpcom-sidebar sidebar reader-sidebar" onClick={ this.handleClick }>
