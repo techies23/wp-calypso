@@ -18,7 +18,9 @@ var Dialog = React.createClass( {
 		baseClassName: React.PropTypes.string,
 		enterTimeout: React.PropTypes.number,
 		leaveTimeout: React.PropTypes.number,
-		onClosed: React.PropTypes.func
+		transitionLeave: React.PropTypes.bool,
+		onClosed: React.PropTypes.func,
+		onClickOutside: React.PropTypes.func
 	},
 
 	getDefaultProps: function() {
