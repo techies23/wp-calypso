@@ -1,7 +1,7 @@
 Our Approach to Data
 ====================
 
-Throughout Calypso's development, our approach to handling data has evolved to allow us to better adapt to the scale at which the application has grown. These shifts have not been unanimously adopted throughout the codebase, so you'll occasionally encounter legacy code which is not consistent with our current recommendations. The purpose of this document is to outline a history of these approaches such that you as the developer can understand the differences between each. Further, it seeks to prescribe our current set of recommendations with regard to data management.
+Throughout Calypso's development, our approach to handling data has evolved to allow us to better adapt to the scale at which the application has grown. These shifts have not been ubiquitously adopted throughout the codebase, so you'll occasionally encounter legacy code which is not consistent with our current recommendations. The purpose of this document is to outline a history of these approaches such that you as the developer can understand the differences between each. Furthermore, it seeks to prescribe our current set of recommendations with regard to data management.
 
 ## History
 
@@ -9,28 +9,28 @@ There have been three major "eras" of data management throughout the lifetime of
 
 ### First Era: Emitter Objects (June 2014 - April 2015)
 
-Our original approach to managing data took an object-oriented approach, wherein an instance of the store would inherit the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter). Typically, a single instance of each object store was shared across the entire application. The instance was responsible for storing data, but included conveniences to automatically fetch data if none currently existed. Used in combination with the [`data-observe` mixin](../client/lib/mixins/data-observe), a developer could monitor an instance of the store passed as a prop to a React component to automatically re-render its contents if the store emitted a `change` event.
+Our original approach to managing data took an object-oriented approach, wherein an instance of the store would inherit the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter). Typically, a single instance of each object store was shared across the entire application. The instance was responsible for storing data, but included conveniences to automatically fetch data upon the first request. Used in combination with the [`data-observe` mixin](../client/lib/mixins/data-observe), a developer could monitor an instance of the store passed as a prop to a React component to automatically re-render its contents if the store emitted a `change` event.
 
 __Identifying characteristics:__
 
-- Module directories live in `lib` and are suffixed with `-list`
+- Module directories in `lib`, suffixed with `-list`
 - Index file exports a common shared instance of the object prototype
-- A `list.js` file includes the object prototype methods
+- A `list.js` file includes the store prototype
 - The list contains a `get` method which triggers a fetch if no data exists
 - Used with the [`data-observe` mixin](../client/lib/mixins/data-observe) in a React component
 
 ### Second Era: Facebook Flux (April 2015 - December 2015)
 
-Facebook's [Flux architecture](https://facebook.github.io/flux/) is a pattern that encourages a [unidirectional data flow](https://facebook.github.io/flux/img/flux-simple-f8-diagram-explained-1300w.png) in which stores can only be manipulated via actions dispatched by a global dispatcher object. The raw data is never exposed by the store module, and as such, data can only be accessed by using helper ("getter") methods from the exported object. Similar to the event emitter object approach, a Flux store module inherits from the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter), though by convention, a store should only ever emit a `change` event (this was common but not as strictly enforced in our emitter objects). Stores subscribe to the dispatcher and listen for actions it is concerned with. Action creators are responsible for dispatching these actions. As an example, it is common to have an action creator that triggers a fetch for data - this action creator would dispatch a `FETCH_` prefixed "view" action upon the initial request, then subsequently a `RECEIVE_` prefixed "server" action upon receiving the data. Any store in the application could react to one or both of these action types.
+Facebook's [Flux architecture](https://facebook.github.io/flux/) is a pattern that encourages a [unidirectional data flow](https://facebook.github.io/flux/img/flux-simple-f8-diagram-explained-1300w.png) in which stores can only be manipulated via actions dispatched by a global dispatcher object. The raw data is never exposed by the store module, and as such, data can only be accessed by using helper ("getter") methods from the exported object. Much like the event emitter object approach, a Flux store module inherits from the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter), though a Flux store should only ever emit a `change` event (this was common but not as strictly enforced in our emitter objects). Stores subscribe to the dispatcher and listen for actions it is concerned with. Action creators are responsible for dispatching these actions. As an example, it is common to have an action creator that triggers a fetch for data - this action creator would dispatch a `FETCH_` prefixed "view" action upon the initial request, then subsequently a `RECEIVE_` prefixed "server" action upon receiving the data. Any store in the application could react to one or both of these action types.
 
 __Identifying characteristics:__
 
-- Module directories live in `lib`
-- Modules contain `actions.js` and at least one store (named or suffixed `store.js`)
-- Actions dispatch view or server actions on the global `Dispatcher` object
+- Module directories in `lib`
+- Modules include `actions.js` and at least one store (named or suffixed `store.js`)
+- Action creators dispatch view or server actions on the global `Dispatcher` object
 - Stores include a top-level object for data storage, which is not directly exported
 - Stores export a number of helper getter functions for accessing known data
-- Stores register on the Dispatcher object, manipulating data in response to action types it is concerned with
+- Stores subscribe to the Dispatcher, manipulating data in response to action types it is concerned with
 
 __Advantages:__
 
@@ -43,7 +43,7 @@ __Advantages:__
 
 [Redux](http://redux.js.org/), described as a "predictable state container", is an evolution of the principles advocated in Flux. It is not a far departure from Flux, but is unique in many ways:
 
-- There is typically only a single store instance, which maintains all state for the entire application
+- There is typically a single store instance which maintains all state for the entire application
 - Action creators do not call to the global dispatcher directly, but rather return simple action objects which can be passed to the [store `dispatch` method](http://rackt.org/redux/docs/api/Store.html#dispatch)
 - While Flux Stores are responsible for maintaining own state, Redux reducers are composable functions that manipulate specific parts of the global state "tree"
 - Since state is the [single source of truth](http://rackt.org/redux/docs/introduction/ThreePrinciples.html#single-source-of-truth) for the entire application, reducers tend to be much simpler and more transparent than Flux stores
@@ -62,18 +62,18 @@ __Advantages:__
 
 ## Current Recommendations
 
-All new data stores should be implemented as part of the global Redux state tree. The `client/state` directory contains all of the behavior describing the global application state. The folder structure of the `state` directory should directly mirror the sub-trees within the global state tree. Each sub-tree can include their own set of actions, reducers, and selectors.
+All new data requirements should be implemented as part of the global Redux state tree. The `client/state` directory contains all of the behavior describing the global application state. The folder structure of the `state` directory should directly mirror the sub-trees within the global state tree. Each sub-tree can include their own reducer, actions, and selectors.
 
 ### Terminology
 
-The Redux documentation includes a [detailed glossary](http://redux.js.org/docs/Glossary.html) of terms used in the context of Redux. Below is an overview of a few of the most common terms:
+The Redux documentation includes a [detailed glossary of terms](http://redux.js.org/docs/Glossary.html). Below is an abbreviated overview of a few of the most common terms:
 
-- Global state (state tree): A deeply nested plain JavaScript object encapsulating the current state of the application, managed by a Redux store instance.
-- Store instance: An object which manages the current state of the application, both in holding the current state value ([`getState()`](http://redux.js.org/docs/api/Store.html#getState)), but also as an entry point to introducing new data ([`dispatch()`](http://redux.js.org/docs/api/Store.html#dispatch)).
-- Action creators: A function that returns an action.
-- Actions: An object describing an intended state mutation.
-- Reducers: A function that, given the current state and an action, returns a new state.
-- Selectors: A helper function for retrieving data from the state tree. This is not a Redux term, but is a common pattern.
+- Global state (state tree): A deeply nested plain JavaScript object encapsulating the current state of the application, managed by a Redux store instance
+- Store instance: An object which manages the current state of the application, both in holding the current state value ([`getState`](http://redux.js.org/docs/api/Store.html#getState)), but also as an entry point to introducing new data ([`dispatch`](http://redux.js.org/docs/api/Store.html#dispatch))
+- Action creators: A function that returns an action
+- Actions: An object describing an intended state mutation
+- Reducers: A function that, given the current state and an action, returns a new state
+- Selectors: A helper function for retrieving data from the state tree. This is not a Redux term, but is a common pattern
 
 ### Folder Structure
 
@@ -95,15 +95,15 @@ client/state/
        └── selectors.js
 ```
 
-For example, the reducer responsible for maintaining the `state.sites` key within the global state can be found in `client/state/sites/reducer.js`. It's quite common that the subject reducer is itself a combined reducer. Just as it helps to split the global state into subdirectories responsible for their own part of the tree, as a subject grows, you may find that it's easier to maintain pieces as nested subdirectories. This composability is one of Redux's strengths.
+For example, the reducer responsible for maintaining the `state.sites` key within the global state can be found in `client/state/sites/reducer.js`. It's quite common that the subject reducer is itself a combined reducer. Just as it helps to split the global state into subdirectories responsible for their own part of the tree, as a subject grows, you may find that it's easier to maintain pieces as nested subdirectories. This ease of composability is one of Redux's strengths.
 
 ### Data Normalization
 
-Because a Redux store is a [single source of truth](http://rackt.org/redux/docs/introduction/ThreePrinciples.html#single-source-of-truth) for the entire application state, it is important that all known data be tracked within the state tree and that it be well-structured. In your reducer functions, consider the data being manipulated in the tree and ensure that subjects are appropriately separated to avoid duplicated data and synchronization concerns. When a subject needs to refer to another part of the tree, store a reference (likely an ID). Tracking an indexed set of items makes it easy to navigate the tree when needing to perform a lookup.
+Because a Redux store is the [single source of truth](http://rackt.org/redux/docs/introduction/ThreePrinciples.html#single-source-of-truth) for the entire application state, it is important that all known data be tracked within the state tree and that it be well-structured. In your reducer functions, consider the data being manipulated in the tree and ensure that subjects are appropriately separated to minimize redundancy and to avoid synchronization concerns. When a subject needs to refer to another part of the tree, store a reference (likely an ID). Tracking an indexed set of items makes it easy to navigate the tree when needing to perform a lookup.
 
 As an example, consider that there are many variations of a "user" in the application. A user may be the current user, a subscriber to a site, or someone who has left a comment on a story in your Reader feed. Each of these display user data in different ways, and in some cases retrieve the data from different sources. However, they can all be classified as a user, and relations between the user and a display context can be established through references.
 
-The following state tree demonstrates how users, sites, and posts may be interrelated, but the data can be normalized in a way such that it is always kept in sync, avoiding duplication, and facilitating lookup.
+The following state tree demonstrates how users, sites, and posts may be interrelated, but where data is normalized in a way such that it is always kept in sync, avoiding duplication, and facilitating lookup.
 
 ```json
 {
@@ -146,7 +146,7 @@ The following state tree demonstrates how users, sites, and posts may be interre
 
 ### Container Components
 
-First, if you haven't already, you may consider reading the following blog posts, as they help to explain the reasoning behind splitting data and visual concerns:
+First, if you haven't already, you should consider reading the following blog posts, as they help to explain the reasoning behind splitting data and visual concerns:
 
 - [_Container Components_](https://medium.com/@learnreact/container-components-c0e67432e005#.zd590uacw)
 - [_Smart and Dumb Components_](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.cwn6alkqw)
@@ -157,7 +157,7 @@ With that in mind, we typically have a few concerns when building a component th
 - Making the data available to the component
 - Allowing the component to modify the data
 
-The first of these, ensuring that data is available, is one that we'd wish to eliminate. It is unforunate that a developer should concern themselves with the fetching behavior of data, as it would be preferable instead that a component describe its data needs, and that the syncing/fetching behavior be handled behind the scenes automatically. Tools like [Relay](https://facebook.github.io/relay/) get us closer to this reality, though Relay has environment requirements that we cannot currently satisfy. For the time being, we must handle our own data fetching, but we should be conscious of this future in which fetching is not a concern for our components.
+The first of these, ensuring that data is available, is one that we'd wish to eliminate. It is unforunate that a developer should concern themselves with the fetching behavior of data, as it would be preferable instead that a component describe its data needs, and that the syncing/fetching behavior be handled behind the scenes automatically. Tools like [Relay](https://facebook.github.io/relay/) get us closer to this reality, though Relay has environment requirements that we cannot currently satisfy. For the time being, we must handle our own data fetching, but we should be conscious of a future in which fetching is not a concern for our components.
 
 Framed this way, we can consider two types of container components: connected components and fetching components.
 
@@ -166,8 +166,6 @@ Framed this way, we can consider two types of container components: connected co
 Separating visual and data concerns is a good mindset to have when approaching components, and whenever possible, we should strive to create reusable visual components which accept simple props for rendering. However, pragmatically it is unreasonable to assume that components will always be reused and that there's always a clear divide between the visual and data elements. As such, while we recommend creating purely visual components whenever possible, it is also reasonable to create components that are directly tied to the global application state. We call these "connected" components, and we use the [`react-redux` library](https://github.com/rackt/react-redux) to assist in creating bindings between React components and the store instance.
 
 Below is an example of a connected component using [`react-redux`'s `connect`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) function. It retrieves an array of posts for a given site and passes the posts to the component for rendering. If you're unfamiliar with the stateless function syntax for declaring components, refer to the [React 0.14 upgrade guide](https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#stateless-functional-components) for more information.
-
-`client/my-sites/posts-list/index.jsx`
 
 ```jsx
 function PostsList( { posts } ) {
@@ -187,12 +185,12 @@ export default connect( ( state, ownProps ) => {
 } )( PostsList );
 ```
 
-The `connect` function accepts two arguments, and they serve very distinct purpose. Both pass props to the connected component, and are respectively used to provide data and handle behavior on behalf of the component.
+The `connect` function accepts two arguments, and they each serve a distinct purpose. Both pass props to the connected component, and are respectively used to provide data and handle behavior on behalf of the component.
 
-1. `mapStateToProps`: A function which, given the store state, returns props to be passed to the connected component. This should be used to satisfy the need to make data available to the component.
-2. `mapDispatchToProps`: A function which, given the store dispatch method, returns props to be passed to the connected component. This should be used to satsify the need to allow the component to update the store state.
+1. `mapStateToProps`: A function which, given the store state, returns props to be passed to the connected component. This is used to satisfy the need to make data available to the component.
+2. `mapDispatchToProps`: A function which, given the store dispatch method, returns props to be passed to the connected component. This is used to satsify the need to allow the component to update the store state.
 
-As an example, consider a component which renders a Delete button for a given post. We want to display the post title as a label in the delete button, and allow the component to trigger the deletion upon click.
+As an example, consider a component which renders a Delete button for a given post. We want to display the post title as a label in the delete button, and allow the component to trigger the post deletion when clicked.
 
 ```jsx
 function PostDeleteButton( { label, delete } ) {
@@ -214,11 +212,11 @@ export default connect( ( state, ownProps ) => {
 } )( PostDeleteButton );
 ```
 
-At this point, you might observe that the visual elements `<PostDeleteButton />` aren't very specific to posts and could probably be reused in different contexts. You'd be right, and it might make sense to split the visual component to its own separate file (e.g. `client/components/delete-button/index.jsx`). You should try to identify these opportunities as often as possible. Since the `connect` wrapping function is separate from the component declaration, it should usually not be difficult to separate the two.
+At this point, you might observe that the visual elements rendered in `<PostDeleteButton />` aren't very specific to posts and could probably be reused in different contexts. This is a good observation to make, and in this case it might make sense to split the visual component to its own separate file (e.g. `client/components/delete-button/index.jsx`). You should try to identify these opportunities as often as possible. Since the `connect` wrapping function is detached from the component declaration in the file above, it should not be difficult to separate the two.
 
 #### Fetching components 
 
-These components accept as few props as possible to describe the data needs of the its descendent components. They should be rendered as high in the render hierarchy as possible; if possible, at the route controller. They should act as a pass-through component, rendering their children, but __they should not pass any props to the children__. If a child has data needs, it should be a connected component. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
+Fetching components accept as few props as possible to describe the data needs of the its descendent components. They should be rendered as high in the render hierarchy as possible; if possible, at the route controller. They should act as a pass-through component, rendering their children, but __they should not pass any props to the children__. If a child has data needs, it should be a connected component. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
 
 Below is an example of a fetching component and how it might be used in the context of a route rendering.
 
@@ -259,7 +257,8 @@ page( '/posts/:siteId', ( context ) => {
 	ReactDOM.render(
 		<PostsData siteId={ siteId }>
 			<PostsList siteId={ siteId } />
-		</PostsData>
+		</PostsData>,
+		document.getElementById( 'primary' )
 	);
 } );
 ```
