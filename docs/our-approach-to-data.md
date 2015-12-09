@@ -111,7 +111,7 @@ The following state tree demonstrates how users, sites, and posts may be interre
 {
 	"users": {
 		"items": {
-			73705554: {
+			"73705554": {
 				"ID": 73705554,
 				"login": "testonesite2014"
 			}
@@ -119,15 +119,15 @@ The following state tree demonstrates how users, sites, and posts may be interre
 	},
 	"sites": {
 		"items": {
-			2916284: {
+			"2916284": {
 				"ID": 2916284,
 				"name": "WordPress.com Example Blog",
 				"description": "Just another WordPress.com weblog",
 			}
 		},
 		"siteUsers": {
-			2916284: {
-				73705554: {
+			"2916284": {
+				"73705554": {
 					"roles": [ "administrator" ]
 				}
 			}
@@ -135,7 +135,9 @@ The following state tree demonstrates how users, sites, and posts may be interre
 	},
 	"posts": {
 		"items": {
-			34: {
+			"34": {
+				"ID": 34,
+				"title": "Hello World!",
 				"site_ID": 2916284,
 				"author_ID": 73705554
 			}
