@@ -268,12 +268,23 @@ Be mindful of the fact that fetching components are an undesirable necessity tha
 
 ### Selectors
 
-__WIP__
+A selector is simply a convenience function for retrieving data out of the global state tree. Since the global state tree is a plain JavaScript object, there's nothing to stop you from accessing data directly, but you may find that creating a selector will help to reduce repetition, improve the semantic meaning of your code, and avoid mistakes. For example, the following two approaches both serve to retrieve an array of posts for a specific site, though you might find the selector more convenient and readable at a glance:
 
-- Shortcutting vs Derived/computed data
-  - Leaning towards computed properties as object getters, or reducer sub-keys
-- Always pass entire state object to selectors
-  - Cross-tree referencing
+```js
+// Using a selector
+let posts = getSitePosts( state, siteId );
+
+// Navigating the state tree
+let posts = state.sites.sitePosts[ siteId ].map( ( postId ) => state.posts.items[ postId ] );
+```
+
+You'll note in this example that the entire `state` object is passed to the selector. We've chosen to standardize on always sending the entire state object to any selector as the first parameter. This consistency should alleviate uncertainty in calling selectors, as you can predictly assume that it'll always have a similar argument signature. More importantly, it's not uncommon for selectors to need to traverse different parts of the global state, as in the example above where we pull from both the `sites` and `posts` top-level state keys.
+
+What are a few common use-cases for selectors?
+
+- Resolving references: A [normalized state tree](#data-normalization) is ideal from the standpoint of minimizing redundancy and syncronization concerns, but is not as developer-friendly to use. Selectors can be helpful in restoring convenient access to useful objects.
+- Filtering data: You can use a selector to return a subset of a state tree value. For example, a `getJetpackSites` selector could return an array of all known sites filtered to only those which are Jetpack-enabled. 
+ - __Side-note:__ In this case, you could achieve a similar effect with a reducer function aggregating an array of Jetpack site IDs. If you were to take this route, you'd probably want a complementary selector anyways. Caching concerns on selectors can be overcome by using memoization techniques (for example, using a library like [`reselect`](https://github.com/rackt/reselect)).
 
 ### Derived Data
 
