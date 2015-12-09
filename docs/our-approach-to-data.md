@@ -7,7 +7,7 @@ Throughout Calypso's development, our approach to handling data has evolved to a
 
 There have been three major "eras" of data management throughout the lifetime of Calypso's development. Below, you will find a description of each, common identifying features, and reasons it was adopted in favor of the previous approach.
 
-### Era One: Emitter Objects (June 2014 - April 2015)
+### First Era: Emitter Objects (June 2014 - April 2015)
 
 Our original approach to managing data took an object-oriented approach, wherein an instance of the store would inherit the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter). Typically, a single instance of each object store was shared across the entire application. The instance was responsible for storing data, but included conveniences to automatically fetch data if none currently existed. Used in combination with the [`data-observe` mixin](../client/lib/mixins/data-observe), a developer could monitor an instance of the store passed as a prop to a React component to automatically re-render its contents if the store emitted a `change` event.
 
@@ -19,7 +19,7 @@ __Identifying characteristics:__
 - The list contains a `get` method which triggers a fetch if no data exists
 - Used with the [`data-observe` mixin](../client/lib/mixins/data-observe) in a React component
 
-### Era Two: Facebook Flux (April 2015 - December 2015)
+### Second Era: Facebook Flux (April 2015 - December 2015)
 
 Facebook's [Flux architecture](https://facebook.github.io/flux/) is a pattern that encourages a [unidirectional data flow](https://facebook.github.io/flux/img/flux-simple-f8-diagram-explained-1300w.png) in which stores can only be manipulated via actions dispatched by a global dispatcher object. The raw data is never exposed by the store module, and as such, data can only be accessed by using helper ("getter") methods from the exported object. Similar to the event emitter object approach, a Flux store module inherits from the [`EventEmitter` interface](https://nodejs.org/api/events.html#events_inheriting_from_eventemitter), though by convention, a store should only ever emit a `change` event (this was common but not as strictly enforced in our emitter objects). Stores subscribe to the dispatcher and listen for actions it is concerned with. Action creators are responsible for dispatching these actions. As an example, it is common to have an action creator that triggers a fetch for data - this action creator would dispatch a `FETCH_` prefixed "view" action upon the initial request, then subsequently a `RECEIVE_` prefixed "server" action upon receiving the data. Any store in the application could react to one or both of these action types.
 
@@ -39,7 +39,7 @@ __Advantages:__
 - Data logic (e.g. fetching) is not intertwined with the storage of the data
 - Adopting an accepted pattern grants us access to a community-driven ecosystem of reference implementations
 
-### Era Three: Redux Global State Tree (December 2015 - Present)
+### Third Era: Redux Global State Tree (December 2015 - Present)
 
 [Redux](http://redux.js.org/), described as a "predictable state container", is an evolution of the principles advocated in Flux. It is not a far departure from Flux, but is unique in many ways:
 
