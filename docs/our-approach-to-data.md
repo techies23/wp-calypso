@@ -69,7 +69,7 @@ All new data stores should be implemented as part of the global Redux state tree
 The Redux documentation includes a [detailed glossary](http://redux.js.org/docs/Glossary.html) of terms used in the context of Redux. Below is an overview of a few of the most common terms:
 
 - Global state (state tree): A deeply nested plain JavaScript object encapsulating the current state of the application, managed by a Redux store instance.
-- Store instance: An object which manages the current state of the application, both in holding the current state value ([`getState()`](http://redux.js.org/docs/api/Store.html#getState)), but also as an entry point to introducing new data ([`dispatch`](http://redux.js.org/docs/api/Store.html#dispatch)).
+- Store instance: An object which manages the current state of the application, both in holding the current state value ([`getState()`](http://redux.js.org/docs/api/Store.html#getState)), but also as an entry point to introducing new data ([`dispatch()`](http://redux.js.org/docs/api/Store.html#dispatch)).
 - Action creators: A function that returns an action.
 - Actions: An object describing an intended state mutation.
 - Reducers: A function that, given the current state and an action, returns a new state.
@@ -146,14 +146,125 @@ The following state tree demonstrates how users, sites, and posts may be interre
 
 ### Container Components
 
-__WIP__
+First, if you haven't already, you may consider reading the following blog posts, as they help to explain the reasoning behind splitting data and visual concerns:
 
-- Top-level fetching component
-  - Goals to remove this concern from the developer such that they can concern themselves only with the data needs of their component
-- React bindings with `react-redux`
-  - Proper usage of `mapStateToProps` (data), `mapDispatchToProps` (behavior)
-- "Smart" vs "dumb" components
-  - When to split visual from connected components
+- [_Container Components_](https://medium.com/@learnreact/container-components-c0e67432e005#.zd590uacw)
+- [_Smart and Dumb Components_](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.cwn6alkqw)
+
+With that in mind, we typically have a few concerns when building a component that has data needs:
+
+- Ensuring that the necessary data is available
+- Making the data available to the component
+- Allowing the component to modify the data
+
+The first of these, ensuring that data is available, is one that we'd wish to eliminate. It is unforunate that a developer should concern themselves with the fetching behavior of data, as it would be preferable instead that a component describe its data needs, and that the syncing/fetching behavior be handled behind the scenes automatically. Tools like [Relay](https://facebook.github.io/relay/) get us closer to this reality, though Relay has environment requirements that we cannot currently satisfy. For the time being, we must handle our own data fetching, but we should be conscious of this future in which fetching is not a concern for our components.
+
+Framed this way, we can consider two types of container components: connected components and fetching components.
+
+#### Connected components
+
+Separating visual and data concerns is a good mindset to have when approaching components, and whenever possible, we should strive to create reusable visual components which accept simple props for rendering. However, pragmatically it is unreasonable to assume that components will always be reused and that there's always a clear divide between the visual and data elements. As such, while we recommend creating purely visual components whenever possible, it is also reasonable to create components that are directly tied to the global application state. We call these "connected" components, and we use the [`react-redux` library](https://github.com/rackt/react-redux) to assist in creating bindings between React components and the store instance.
+
+Below is an example of a connected component using [`react-redux`'s `connect`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) function. It retrieves an array of posts for a given site and passes the posts to the component for rendering. If you're unfamiliar with the stateless function syntax for declaring components, refer to the [React 0.14 upgrade guide](https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#stateless-functional-components) for more information.
+
+`client/my-sites/posts-list/index.jsx`
+
+```jsx
+function PostsList( { posts } ) {
+	return (
+		<ul className="posts-list">
+			{ posts.map( ( post ) => {
+				return <li key={ post.id }>{ post.title }</li>;
+			} ) }
+		</ul>
+	);
+}
+
+export default connect( ( state, ownProps ) => {
+	return {
+		posts: getSitePosts( ownProps.siteId )
+	};
+} )( PostsList );
+```
+
+The `connect` function accepts two arguments, and they serve very distinct purpose. Both pass props to the connected component, and are respectively used to provide data and handle behavior on behalf of the component.
+
+1. `mapStateToProps`: A function which, given the store state, returns props to be passed to the connected component. This should be used to satisfy the need to make data available to the component.
+2. `mapDispatchToProps`: A function which, given the store dispatch method, returns props to be passed to the connected component. This should be used to satsify the need to allow the component to update the store state.
+
+As an example, consider a component which renders a Delete button for a given post. We want to display the post title as a label in the delete button, and allow the component to trigger the deletion upon click.
+
+```jsx
+function PostDeleteButton( { label, delete } ) {
+	return (
+		<button onClick={ delete }>
+			{ this.translate( 'Delete "%s"', { args: [ label ] } ) }
+		</button>
+	);
+}
+
+export default connect( ( state, ownProps ) => {
+	return {
+		label: getSitePost( ownProps.siteId, ownProps.postId ).title
+	};
+}, ( dispatch, ownProps ) => {
+	return {
+		delete: () => dispatch( deleteSitePost( ownProps.siteId, ownProps.postId ) )
+	};
+} )( PostDeleteButton );
+```
+
+At this point, you might observe that the visual elements `<PostDeleteButton />` aren't very specific to posts and could probably be reused in different contexts. You'd be right, and it might make sense to split the visual component to its own separate file (e.g. `client/components/delete-button/index.jsx`). You should try to identify these opportunities as often as possible. Since the `connect` wrapping function is separate from the component declaration, it should usually not be difficult to separate the two.
+
+#### Fetching components 
+
+These components accept as few props as possible to describe the data needs of the its descendent components. They should be rendered as high in the render hierarchy as possible; if possible, at the route controller. They should act as a pass-through component, rendering their children, but __they should not pass any props to the children__. If a child has data needs, it should be a connected component. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
+
+Below is an example of a fetching component and how it might be used in the context of a route rendering.
+
+`client/components/data/posts-data/index.jsx`
+
+```jsx
+class PostsData extends Component {
+	constructor( props ) {
+		super( props );
+
+		if ( ! props.posts ) {
+			props.fetchPosts( props.siteId );
+		}
+	}
+
+	render() {
+		return this.props.children;
+	}
+}
+
+export default connect( ( state, ownProps ) => {
+	return {
+		posts: getSitePosts( ownProps.siteId )
+	};
+}, ( dispatch ) => {
+	return bindActionCreators( {
+		fetchPosts
+	}, dispatch );
+} )( PostsData );
+```
+
+`client/my-sites/controller.js`
+
+```
+page( '/posts/:siteId', ( context ) => {
+	const siteId = context.params.siteId;
+
+	ReactDOM.render(
+		<PostsData siteId={ siteId }>
+			<PostsList siteId={ siteId } />
+		</PostsData>
+	);
+} );
+```
+
+Be mindful of the fact that fetching components are an undesirable necessity that we'd like to remove in the future, and as such treat it as though it may eventually be removed altogether. This is why the `siteId` prop is specified on both `<PostsData />` and `<PostsList />` when rendering.
 
 ### Selectors
 
