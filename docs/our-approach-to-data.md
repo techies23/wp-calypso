@@ -66,16 +66,14 @@ All new data stores should be implemented as part of the global Redux state tree
 
 ### Terminology
 
-__WIP__
+The Redux documentation includes a [detailed glossary](http://redux.js.org/docs/Glossary.html) of terms used in the context of Redux. Below is an overview of a few of the most common terms:
 
-http://redux.js.org/docs/Glossary.html
-
-- Global state (state tree):
-- Store instance:
-- Action creators:
-- Actions:
-- Reducers:
-- Selectors:
+- Global state (state tree): A deeply nested plain JavaScript object encapsulating the current state of the application, managed by a Redux store instance.
+- Store instance: An object which manages the current state of the application, both in holding the current state value ([`getState()`](http://redux.js.org/docs/api/Store.html#getState)), but also as an entry point to introducing new data ([`dispatch`](http://redux.js.org/docs/api/Store.html#dispatch)).
+- Action creators: A function that returns an action.
+- Actions: An object describing an intended state mutation.
+- Reducers: A function that, given the current state and an action, returns a new state.
+- Selectors: A helper function for retrieving data from the state tree. This is not a Redux term, but is a common pattern.
 
 ### Folder Structure
 
