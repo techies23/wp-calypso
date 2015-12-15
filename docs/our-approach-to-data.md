@@ -281,6 +281,8 @@ let posts = state.sites.sitePosts[ siteId ].map( ( postId ) => state.posts.items
 
 You'll note in this example that the entire `state` object is passed to the selector. We've chosen to standardize on always sending the entire state object to any selector as the first parameter. This consistency should alleviate uncertainty in calling selectors, as you can always assume that it'll have a similar argument signature. More importantly, it's not uncommon for selectors to need to traverse different parts of the global state, as in the example above where we pull from both the `sites` and `posts` top-level state keys.
 
+It's important that selectors always be pure functions, meaning that the function should always return the same result when passed identical arguments in sequence. There should be no side-effects of calling a selector. For example, in a selector you should never trigger an AJAX request or assign values to variables defined outside the scope of the function.
+
 What are a few common use-cases for selectors?
 
 - Resolving references: A [normalized state tree](#data-normalization) is ideal from the standpoint of minimizing redundancy and syncronization concerns, but is not as developer-friendly to use. Selectors can be helpful in restoring convenient access to useful objects.
