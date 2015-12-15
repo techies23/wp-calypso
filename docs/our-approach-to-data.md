@@ -82,20 +82,22 @@ The root module of the `state` directory exports a single reducer function. We l
 ```text
 client/state/
 ├── index.js
+├── action-types.js
 └── { subject }/
-    ├── action-types.js
     ├── actions.js
     ├── reducer.js
     ├── selectors.js
     ├── Makefile
     ├── README.md
     └── test/
-       ├── actions.js
-       ├── reducer.js
-       └── selectors.js
+        ├── actions.js
+        ├── reducer.js
+        └── selectors.js
 ```
 
 For example, the reducer responsible for maintaining the `state.sites` key within the global state can be found in `client/state/sites/reducer.js`. It's quite common that the subject reducer is itself a combined reducer. Just as it helps to split the global state into subdirectories responsible for their own part of the tree, as a subject grows, you may find that it's easier to maintain pieces as nested subdirectories. This ease of composability is one of Redux's strengths.
+
+As you build your piece of the state and introduce new behaviors, action type constants should be added to `action-types.js` in the root `state` directory. Action types are considered global such that any state subtree's reducer can react to any action types dispatched through the system.
 
 ### Data Normalization
 
