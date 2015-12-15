@@ -46,6 +46,7 @@ var SidebarMenuItem = React.createClass( {
 
 	preload: function() {
 		if ( ! this._preloaded && this.props.preload ) {
+			this._preloaded = true;
 			sections.preload( this.props.preload );
 		}
 	},
