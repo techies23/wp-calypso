@@ -563,7 +563,7 @@ SitesList.prototype.onUpdatedPlugin = function( site ) {
 		let siteUpdateInfo = assign( {}, site.updates );
 		siteUpdateInfo.plugins--;
 		siteUpdateInfo.total--;
-		site.set( { update: siteUpdateInfo } );
+		site.set( { updates: siteUpdateInfo } );
 
 		if ( site.updates.plugins <= 0 ) {
 			site.fetchAvailableUpdates();
