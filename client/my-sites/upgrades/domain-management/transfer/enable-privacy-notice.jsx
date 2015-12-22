@@ -2,6 +2,8 @@
  * External dependencies
  */
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 /**
  * Internal dependencies
@@ -11,6 +13,7 @@ import notices from 'notices';
 import Notice from 'components/notice';
 import { enablePrivacyProtection } from 'lib/upgrades/actions';
 import { getSelectedDomain } from 'lib/domains';
+import { successNotice } from 'state/notices/actions';
 
 const EnablePrivacyNotice = React.createClass( {
 	propTypes: {
@@ -91,7 +94,7 @@ const EnablePrivacyNotice = React.createClass( {
 			return;
 		}
 
-		notices.success(
+		this.props.successNotice(
 			this.translate(
 				'Success! Private Registration was re-enabled on your domain. ' +
 				'It may take a few minutes for the public contact details for ' +
@@ -101,4 +104,7 @@ const EnablePrivacyNotice = React.createClass( {
 	}
 } );
 
-export default EnablePrivacyNotice;
+export default connect(
+	null,
+	dispatch => bindActionCreators( { successNotice }, dispatch )
+)( EnablePrivacyNotice );

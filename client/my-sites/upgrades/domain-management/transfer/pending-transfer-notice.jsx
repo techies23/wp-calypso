@@ -2,6 +2,8 @@
  * External dependencies
  */
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 /**
  * Internal dependencies
@@ -11,6 +13,7 @@ import notices from 'notices';
 import Notice from 'components/notice';
 import { acceptTransfer, declineTransfer } from 'lib/upgrades/actions';
 import { getSelectedDomain } from 'lib/domains';
+import { successNotice } from 'state/notices/actions';
 
 const PendingTransferNotice = React.createClass( {
 	propTypes: {
@@ -85,7 +88,7 @@ const PendingTransferNotice = React.createClass( {
 			return;
 		}
 
-		notices.success(
+		this.props.successNotice(
 			this.translate(
 				"Sorry to see you go! We've accepted the domain transfer, you " +
 				'should receive an email confirming this from your new registrar ' +
@@ -124,7 +127,7 @@ const PendingTransferNotice = React.createClass( {
 			return;
 		}
 
-		notices.success(
+		this.prop.successNotice(
 			this.translate(
 				"Glad you want to stay! We've declined the domain transfer request."
 			)
@@ -132,4 +135,7 @@ const PendingTransferNotice = React.createClass( {
 	}
 } );
 
-export default PendingTransferNotice;
+export default connect(
+	null,
+	dispatch => bindActionCreators( { successNotice }, dispatch )
+)( PendingTransferNotice );
