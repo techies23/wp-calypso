@@ -42,14 +42,7 @@ Layout = React.createClass( {
 
 	componentWillUpdate: function( nextProps ) {
 		if ( this.props.section !== nextProps.section ) {
-			if ( nextProps.section === 'sites' ) {
-				setTimeout( function() {
-					if ( ! this.isMounted() || this._sitesPoller ) {
-						return;
-					}
-					this._sitesPoller = PollerPool.add( this.props.sites, 'fetchAvailableUpdates', { interval: 900000 } );
-				}.bind( this ), 0 );
-			} else {
+			if ( nextProps.section !== 'sites' ) {
 				this.removeSitesPoller();
 			}
 		}
