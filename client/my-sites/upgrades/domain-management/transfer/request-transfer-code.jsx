@@ -2,7 +2,8 @@
  * External dependencies
  */
 import React from 'react';
-
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 /**
  * Internal dependencies
  */
@@ -12,6 +13,7 @@ import FormInputCheckbox from 'components/forms/form-checkbox';
 import notices from 'notices';
 import { getSelectedDomain } from 'lib/domains';
 import { requestTransferCode } from 'lib/upgrades/actions';
+import { successNotice } from 'state/notices/actions';
 
 const RequestTransferCode = React.createClass( {
 	propTypes: {
@@ -189,14 +191,14 @@ const RequestTransferCode = React.createClass( {
 		}
 
 		if ( this.isManualTransferRequired() ) {
-			notices.success(
+			this.props.successNotice(
 				this.translate(
 					'Our support team has been notified and will contact you once we ' +
 					'receive the transfer code for this domain.'
 				)
 			);
 		} else {
-			notices.success(
+			this.props.successNotice(
 				this.translate(
 					"An email has been sent to the Domain Registrant's contact email " +
 					"address containing the Domain Transfer Code. If you don't " +
@@ -274,4 +276,7 @@ const RequestTransferCode = React.createClass( {
 	}
 } );
 
-export default RequestTransferCode;
+export default connect(
+	null,
+	dispatch => bindActionCreators( { successNotice }, dispatch )
+)( RequestTransferCode );

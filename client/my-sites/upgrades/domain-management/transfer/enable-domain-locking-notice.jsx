@@ -10,6 +10,9 @@ import Button from 'components/button';
 import notices from 'notices';
 import Notice from 'components/notice';
 import { enableDomainLocking } from 'lib/upgrades/actions';
+import { successNotice } from 'state/notices/actions'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const EnableDomainLockingNotice = React.createClass( {
 	propTypes: {
@@ -76,7 +79,7 @@ const EnableDomainLockingNotice = React.createClass( {
 			return;
 		}
 
-		notices.success(
+		this.props.successNotice(
 			this.translate(
 				'Success! Your domain has been re-locked to prevent it being ' +
 				'transferred.'
@@ -85,4 +88,8 @@ const EnableDomainLockingNotice = React.createClass( {
 	}
 } );
 
-export default EnableDomainLockingNotice;
+export default connect(
+	null,
+	dispatch => bindActionCreators( { successNotice }, dispatch )
+)( EnableDomainLockingNotice );
+
