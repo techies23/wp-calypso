@@ -25,7 +25,6 @@ var MasterbarLoggedIn = require( 'layout/masterbar/logged-in' ),
 	connect = require( 'react-redux' ).connect,
 	PulsingDot = require( 'components/pulsing-dot' ),
 	SitesListNotices = require( 'lib/sites-list/notices' ),
-	PollerPool = require( 'lib/data-poller' ),
 	KeyboardShortcutsMenu,
 	Layout;
 
@@ -38,28 +37,6 @@ Layout = React.createClass( {
 
 	mixins: [ SitesListNotices, observe( 'user', 'focus', 'nuxWelcome', 'sites', 'translatorInvitation' ) ],
 
-	_sitesPoller: null,
-
-	componentWillUpdate: function( nextProps ) {
-		if ( this.props.section !== nextProps.section ) {
-			if ( nextProps.section !== 'sites' ) {
-				this.removeSitesPoller();
-			}
-		}
-	},
-
-	componentWillUnmount: function() {
-		this.removeSitesPoller();
-	},
-
-	removeSitesPoller: function() {
-		if ( ! this._sitesPoller ) {
-			return;
-		}
-
-		PollerPool.remove( this._sitesPoller );
-		this._sitesPoller = null;
-	},
 	closeWelcome: function() {
 		this.props.nuxWelcome.closeWelcome();
 		analytics.ga.recordEvent( 'Welcome Box', 'Clicked Close Button' );
