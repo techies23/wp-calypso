@@ -145,7 +145,7 @@ module.exports = React.createClass( {
 						{ this.price() }
 					</span>
 					{ this.domainVolumeSelection() }
-					{ isCredits( cartItem ) ? null : this.removeButton() }
+					{ isCredits( this.props.cartItem ) ? null : this.removeButton() }
 				</div>
 			</li>
 		);
