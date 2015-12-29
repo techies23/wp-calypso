@@ -1,7 +1,9 @@
 /**
  * External dependencies
  */
-import React from 'react'
+import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import debugModule from 'debug';
 import page from 'page';
 import classNames from 'classnames';
@@ -20,8 +22,9 @@ import HeaderCake from 'components/header-cake';
 import PluginMeta from 'my-sites/plugins/plugin-meta';
 import PluginsStore from 'lib/plugins/store';
 import PluginsLog from 'lib/plugins/log-store';
-import PluginsDataStore from 'lib/plugins/wporg-data/store';
-import PluginsActions from 'lib/plugins/actions';
+import WporgPluginsSelectors from 'state/plugins/wporg/selectors';
+import PluginsActions from 'state/plugins/wporg/actions';
+import { fetchPluginData } from 'state/plugins/wporg/actions';
 import PluginNotices from 'lib/plugins/notices';
 import MainComponent from 'components/main';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
@@ -36,19 +39,22 @@ import FeatureExample from 'components/feature-example'
  */
 const debug = debugModule( 'calypso:my-sites:plugin' );
 
-export default React.createClass( {
+const SinglePlugin = React.createClass( {
 
-	displayName: 'Plugin',
+	displayName: 'SinglePlugin',
 
 	_DEFAULT_PLUGINS_BASE_PATH: 'http://wordpress.org/plugins/',
 
 	mixins: [ PluginNotices ],
 
+	componentWillMount() {
+		this.props.fetchPluginData( this.props.pluginSlug );
+	},
+
 	componentDidMount() {
 		debug( 'Plugin React component mounted.' );
 		this.props.sites.on( 'change', this.refreshSitesAndPlugins );
 		PluginsStore.on( 'change', this.refreshSitesAndPlugins );
-		PluginsDataStore.on( 'change', this.refreshSitesAndPlugins );
 		PluginsLog.on( 'change', this.refreshSitesAndPlugins );
 	},
 
@@ -59,7 +65,6 @@ export default React.createClass( {
 	componentWillUnmount() {
 		this.props.sites.removeListener( 'change', this.refreshSitesAndPlugins );
 		PluginsStore.removeListener( 'change', this.refreshSitesAndPlugins );
-		PluginsDataStore.removeListener( 'change', this.refreshSitesAndPlugins );
 		PluginsLog.removeListener( 'change', this.refreshSitesAndPlugins );
 	},
 
@@ -99,8 +104,8 @@ export default React.createClass( {
 
 		if ( sitePlugin && ! props.isWpcomPlugin ) {
 			// if it isn't a .com plugin, assign it .org details
-			plugin = Object.assign( plugin, PluginsDataStore.get( props.pluginSlug ) );
-			isFetching = PluginsDataStore.isFetching( props.pluginSlug );
+			plugin = Object.assign( plugin, WporgPluginsSelectors.getPlugin( this.props.wporgPlugins, props.pluginSlug ) );
+			isFetching = WporgPluginsSelectors.isFetching( this.props.wporgPlugins, props.pluginSlug );
 		}
 
 		return {
@@ -158,8 +163,8 @@ export default React.createClass( {
 
 	pluginExists( pluginSlug ) {
 		// if the plugin info is still being fetched, we default to true
-		if ( ! PluginsDataStore.isFetching( pluginSlug ) ) {
-			if ( PluginsDataStore.get( pluginSlug ) ) {
+		if ( ! WporgPluginsSelectors.isFetching( this.props.wporgPlugins, pluginSlug ) ) {
+			if ( WporgPluginsSelectors.getPlugin( this.props.wporgPlugins, pluginSlug ) ) {
 				return true;
 			}
 			const sites = this.props.sites.getSelectedOrAllWithPlugins() || [];
@@ -343,3 +348,12 @@ export default React.createClass( {
 		);
 	}
 } );
+
+export default connect(
+	state => {
+		return {
+			wporgPlugins: state.plugins.wporg
+		};
+	},
+	dispatch => bindActionCreators( { fetchPluginData }, dispatch )
+)( SinglePlugin );
