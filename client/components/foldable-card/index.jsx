@@ -96,6 +96,10 @@ var FoldableCard = React.createClass( {
 	},
 
 	renderContent: function() {
+		if ( ! this.state.expanded ) {
+			return null;
+		}
+
 		return (
 			<div className="foldable-card__content">
 				{ this.props.children }

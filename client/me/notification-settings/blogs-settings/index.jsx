@@ -9,6 +9,8 @@ import Immutable from 'immutable';
  */
 import EmptyContentComponent from 'components/empty-content';
 import Blog from './blog';
+import URLSearch from 'lib/mixins/url-search';
+import SearchCard from 'components/search-card';
 import InfiniteList from 'components/infinite-list';
 import Placeholder from './placeholder';
 import config from 'config';
@@ -16,12 +18,14 @@ import config from 'config';
 export default React.createClass( {
 	displayName: 'BlogsSettings',
 
+	mixins: [ URLSearch ],
+
 	propTypes: {
 		blogs: PropTypes.object.isRequired,
 		devices: PropTypes.object.isRequired,
 		settings: PropTypes.instanceOf( Immutable.List ),
 		hasUnsavedChanges: PropTypes.bool.isRequired,
-		onToggle: PropTypes.func.isRequired,
+		// onToggle: PropTypes.func.isRequired,
 		onSave: PropTypes.func.isRequired,
 		onSaveToAll: PropTypes.func.isRequired
 	},
@@ -40,6 +44,7 @@ export default React.createClass( {
 				illustration={ '/calypso/images/drake/drake-nosites.svg' } />
 		}
 
+
 		const renderBlog = ( blog, index, disableToggle = false ) => {
 			return (
 				<Blog
@@ -49,7 +54,7 @@ export default React.createClass( {
 					disableToggle={ disableToggle }
 					hasUnsavedChanges={ this.props.hasUnsavedChanges }
 					settings={ this.props.settings.find( settings => settings.get( 'blog_id' ) === blog.ID ) }
-					onToggle={ this.props.onToggle }
+					// onToggle={ this.props.onToggle }
 					onSave={ () => this.props.onSave( blog.ID ) }
 					onSaveToAll={ () => this.props.onSaveToAll( blog.ID ) } />
 			);
@@ -59,16 +64,24 @@ export default React.createClass( {
 			return renderBlog( this.props.blogs.get()[0], null, true );
 		}
 
+
 		return (
-			<InfiniteList
-				items={ this.props.blogs.get() }
-				lastPage={ true }
-				fetchNextPage={ () => {} }
-				fetchingNextPage={ false }
-				guessedItemHeight={ 69 }
-				getItemRef={ blog => `blog-${ blog.ID }` }
-				renderItem={ renderBlog }
-				renderLoadingPlaceholders={ () => <Placeholder /> } />
+			<div>
+				<SearchCard
+					autoFocus={ true }
+					delaySearch={ true }
+					placeholder={ this.translate( 'Search your sites' ) }
+					onSearch={ this.doSearch } />
+				<InfiniteList
+					items={ this.props.blogs.get() }
+					lastPage={ true }
+					fetchNextPage={ () => {} }
+					fetchingNextPage={ false }
+					guessedItemHeight={ 69 }
+					getItemRef={ blog => `blog-${ blog.ID }` }
+					renderItem={ renderBlog }
+					renderLoadingPlaceholders={ () => <Placeholder /> } />
+			</div>
 		);
 	}
 } );
