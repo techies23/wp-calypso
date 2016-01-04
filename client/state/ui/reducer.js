@@ -7,6 +7,7 @@ import { combineReducers } from 'redux';
  * Internal dependencies
  */
 import { SET_SELECTED_SITE, SET_SECTION } from 'state/action-types';
+import editor from './editor/reducer';
 
 /**
  * Tracks the currently selected site ID.
@@ -50,5 +51,6 @@ export default combineReducers( {
 	section,
 	isLoading,
 	hasSidebar,
-	selectedSite
+	selectedSite,
+	editor
 } );
