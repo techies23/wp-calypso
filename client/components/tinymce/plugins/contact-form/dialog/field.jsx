@@ -57,11 +57,10 @@ export default React.createClass( {
 					</SelectDropdown>
 				</FormFieldset>
 				<FormFieldset>
-					<FormLabel>Field Name</FormLabel>
+					<FormLabel>Field Label</FormLabel>
 					<TrackInputChanges>
 						<FormTextInput value={ this.state.name } onChange={ event => this.setState( { name: event.target.value } ) } />
 					</TrackInputChanges>
-					<FormSettingExplanation>Name of the field as it will appear when you receive an email.</FormSettingExplanation>
 				</FormFieldset>
 
 				{ () => {
@@ -70,7 +69,7 @@ export default React.createClass( {
 							<FormFieldset>
 								<FormLabel>Placeholder Text</FormLabel>
 								<FormTextInput />
-								<FormSettingExplanation>A placeholder text that will appear inside this form field as a reference to the user.</FormSettingExplanation>
+								<FormSettingExplanation>Helpful text that will appear inside the form field.</FormSettingExplanation>
 							</FormFieldset>
 						);
 					}
