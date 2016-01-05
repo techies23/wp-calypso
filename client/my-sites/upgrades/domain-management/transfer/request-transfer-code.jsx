@@ -15,7 +15,7 @@ import { getSelectedDomain } from 'lib/domains';
 import { requestTransferCode } from 'lib/upgrades/actions';
 import { successNotice } from 'state/notices/actions';
 
-const RequestTransferCode = React.createClass( {
+export const RequestTransferCode = React.createClass( {
 	propTypes: {
 		domains: React.PropTypes.object.isRequired,
 		selectedDomainName: React.PropTypes.string.isRequired,

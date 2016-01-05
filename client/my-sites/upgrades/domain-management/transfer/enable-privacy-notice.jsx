@@ -15,7 +15,7 @@ import { enablePrivacyProtection } from 'lib/upgrades/actions';
 import { getSelectedDomain } from 'lib/domains';
 import { successNotice } from 'state/notices/actions';
 
-const EnablePrivacyNotice = React.createClass( {
+export const EnablePrivacyNotice = React.createClass( {
 	propTypes: {
 		domains: React.PropTypes.object.isRequired,
 		selectedDomainName: React.PropTypes.string.isRequired,

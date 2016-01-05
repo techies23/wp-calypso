@@ -15,7 +15,7 @@ import { acceptTransfer, declineTransfer } from 'lib/upgrades/actions';
 import { getSelectedDomain } from 'lib/domains';
 import { successNotice } from 'state/notices/actions';
 
-const PendingTransferNotice = React.createClass( {
+export const PendingTransferNotice = React.createClass( {
 	propTypes: {
 		domains: React.PropTypes.object.isRequired,
 		selectedDomainName: React.PropTypes.string.isRequired,

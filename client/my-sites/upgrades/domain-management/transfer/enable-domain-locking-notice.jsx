@@ -14,7 +14,7 @@ import { successNotice } from 'state/notices/actions'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-const EnableDomainLockingNotice = React.createClass( {
+export const EnableDomainLockingNotice = React.createClass( {
 	propTypes: {
 		selectedDomainName: React.PropTypes.string.isRequired,
 		wapiDomainInfo: React.PropTypes.object.isRequired
