@@ -131,7 +131,7 @@ export default React.createClass( {
 				<div className="contact-form__form-fields">
 					<Field />
 					<FormFieldset>
-						<FormButton key="add">Add  New Field</FormButton>
+						<FormButton key="add">Add New Field</FormButton>
 					</FormFieldset>
 				</div>
 			</Dialog>
