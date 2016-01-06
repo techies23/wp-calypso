@@ -23,7 +23,7 @@ const SYNC_ACTIONS = {
  */
 export default function( store ) {
 	return Dispatcher.register( ( payload ) => {
-		let handler = SYNC_ACTIONS[ payload.action.type ];
+		const handler = SYNC_ACTIONS[ payload.action.type ];
 		if ( handler ) {
 			store.dispatch( handler( payload.action ) );
 		}
