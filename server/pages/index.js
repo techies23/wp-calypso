@@ -7,7 +7,8 @@ var express = require( 'express' ),
 	i18nUtils = require( 'lib/i18n-utils' ),
 	debug = require( 'debug' )( 'calypso:pages' ),
 	React = require( 'react' ),
-	ReactDomServer = require( 'react-dom/server' );
+	ReactDomServer = require( 'react-dom/server' ),
+	Helmet = require( 'react-helmet' );
 
 var config = require( 'config' ),
 	sanitize = require( 'sanitize' ),
@@ -382,6 +383,13 @@ module.exports = function() {
 					throw ex;
 				}
 			}
+
+			const {
+				title: helmetTitle,
+				meta: helmetMeta,
+				link: helmetLink
+			} = Helmet.rewind();
+			Object.assign( context, { helmetTitle, helmetMeta, helmetLink } );
 
 			res.render( 'index.jade', context );
 		}
