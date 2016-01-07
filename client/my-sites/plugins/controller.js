@@ -19,6 +19,9 @@ var route = require( 'lib/route' ),
 	PluginComponent = require( './plugin' ),
 	PluginBrowser = require( './plugins-browser' ),
 	titleActions = require( 'lib/screen-title/actions' ),
+	JetpackManageErrorPage = require( 'my-sites/jetpack-manage-error-page' ),
+	PlanSetup = require( './plan-setup' ),
+	PlanSetupInstructions = require( './plan-setup/instructions' ),
 	allowedCategoryNames = [ 'new', 'popular', 'featured' ];
 
 /**
@@ -150,6 +153,40 @@ function renderPluginsBrowser( context, siteUrl ) {
 	);
 }
 
+function renderNoManageWarning() {
+	let site = sites.getSelectedSite();
+	ReactDom.render(
+		React.createElement( JetpackManageErrorPage, {
+			site: site,
+			template: 'optInManage',
+			title: i18n.translate( 'Oh no! We can\'t automatically install your new plugins.' ),
+			section: 'plugins',
+			illustration: '/calypso/images/jetpack/jetpack-manage.svg',
+		} ),
+		document.getElementById( 'primary' )
+	);
+}
+
+function renderCantFileEdit() {
+	let site = sites.getSelectedSite();
+	ReactDom.render(
+		React.createElement( PlanSetupInstructions, {
+			selectedSite: site,
+		} ),
+		document.getElementById( 'primary' )
+	);
+}
+
+function renderProvisionPlugins() {
+	let site = sites.getSelectedSite();
+	ReactDom.render(
+		React.createElement( PlanSetup, {
+			selectedSite: site,
+		} ),
+		document.getElementById( 'primary' )
+	);
+}
+
 controller = {
 
 	plugins: function( filter, context ) {
@@ -179,6 +216,32 @@ controller = {
 		var siteUrl = route.getSiteFragment( context.path );
 
 		renderPluginsBrowser( context, siteUrl );
+	},
+
+	setupPlugins: function() {
+		let selectedSite = sites.getSelectedSite();
+
+		// Not a Jetpack plan
+		if ( 0 !== selectedSite.plan.product_slug.indexOf( 'jetpack_' ) ) {
+			page.redirect( '/plugins' );
+			return;
+		// Not a paid plan (nothing to set up)
+		} else if ( 'jetpack_free' === selectedSite.plan.product_slug ) {
+			page.redirect( '/plans/' + selectedSite.slug );
+			return;
+		}
+
+		if ( ! selectedSite.canManage() ) {
+			renderNoManageWarning();
+			return;
+		}
+
+		if ( ! selectedSite.canUpdateFiles ) {
+			renderCantFileEdit();
+			return;
+		}
+
+		renderProvisionPlugins();
 	},
 
 	jetpackCanUpdate: function( filter, context, next ) {
