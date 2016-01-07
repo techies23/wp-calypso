@@ -51,6 +51,7 @@
 		"manage/pages": true,
 		"manage/plugins": true,
 		"manage/plugins/browser": true,
+		"manage/plugins/setup": true,
 		"manage/plugins/compatibility-warning": false,
 		"manage/plugins/cache": false,
 
