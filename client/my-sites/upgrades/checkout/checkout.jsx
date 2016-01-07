@@ -133,6 +133,8 @@ module.exports = React.createClass( {
 		if ( cartItems.hasRenewalItem( this.props.cart ) ) {
 			renewalItem = cartItems.getRenewalItems( this.props.cart )[ 0 ];
 			return purchasePaths.managePurchaseDestination( renewalItem.extra.purchaseDomain, renewalItem.extra.purchaseId, 'thank-you' );
+		} else if ( cartItems.hasOnlyJetpackPlans( this.props.cart ) ) {
+			return '/plugins/setup/' + this.props.sites.getSelectedSite().slug;
 		}
 
 		return '/checkout/thank-you';
