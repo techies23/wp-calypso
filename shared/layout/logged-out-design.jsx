@@ -2,28 +2,19 @@
  * External dependencies
  */
 import React from 'react';
-import Helmet from 'react-helmet';
 
 /**
  * Internal dependencies
  */
 import MasterbarLoggedOut from 'layout/masterbar/logged-out';
-
-const TITLE = 'Foo';
-const CANONICAL_URL = 'https://wordpress.com/foo';
+import Head from 'layout/head';
 
 const LayoutLoggedOutDesign = () => (
 	<div className="wp is-section-design has-no-sidebar">
-		<Helmet
-			title={ TITLE }
-			meta={ [
-				{ name: 'description', property: 'og:description', content: 'DESCRIPTION' },
-				{ property: 'og:title', content: TITLE },
-				{ property: 'og:url', content: CANONICAL_URL },
-			] }
-			link={ [
-				{ rel: 'canonical', href: CANONICAL_URL }
-			] }
+		<Head
+			title="WordPress Themes"
+			description="Beautiful, responsive, free and premium WordPress themes for your photography site, portfolio, magazine, business website, or blog."
+			canonicalUrl="https://wordpress.com/design"
 		/>
 		<MasterbarLoggedOut />
 		<div id="content" className="wp-content">
