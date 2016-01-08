@@ -13,6 +13,87 @@ $color-pocket: #ee4256;
 $color-email: #f8f8f8;
 $color-print: #f8f8f8;
 
+.foldable-card.sharing-service {
+
+	&.facebook{
+		h2{
+			color: $color-facebook;
+		}
+		.sharing-service__logo {
+			background-color: $color-facebook;
+		}
+	}
+
+	&.twitter{
+		h2{
+			color: $color-twitter;
+		}
+		.sharing-service__logo {
+			background-color: $color-twitter;
+		}
+	}
+
+	&.google_plus{
+		h2 {
+			color: $color-gplus;
+		}
+		.sharing-service__logo {
+			background-color: $color-gplus;
+		}
+	}
+
+	&.linkedin{
+		h2 {
+			color: $color-linkedin;
+		}
+		.sharing-service__logo {
+			background-color: $color-linkedin;
+		}
+	}
+
+	&.tumblr{
+		h2 {
+			color: $color-tumblr;
+		}
+		.sharing-service__logo {
+			background-color: $color-tumblr;
+		}
+	}
+
+	&.path{
+		h2 {
+			color: $color-path;
+		}
+		.sharing-service__logo {
+			background-color: $color-path;
+		}
+	}
+
+	&.eventbrite{
+		h2 {
+			color: $color-eventbrite;
+		}
+		.sharing-service__logo {
+			background-color: $color-path;
+		}
+	}
+
+	.sharing-service__logo {
+		float: left;
+		width: 36px;
+		height: 36px;
+		margin-right: 16px;
+
+		path{
+			fill: #000;
+		}
+	}
+
+	.sharing-service__name {
+		float: left;
+	}
+}
+
 .sharing-settings {
 	// labels, checkboxes, radio
 
@@ -47,57 +128,6 @@ $color-print: #f8f8f8;
 .sharing-settings.sharing-connections {
 	@include breakpoint( "<480px" ) {
 		padding: 16px 0;
-	}
-
-	h2 {
-		font-size: 20px;
-		margin-bottom: 10px;
-	}
-
-	.sharing-link p {
-		margin-bottom: 1em;
-	}
-
-	.button.is-warning {
-		background: darken( $alert-yellow, 3% );
-		border-color: darken( $alert-yellow, 10% );
-		color: $white;
-
-		&:hover {
-			border-color: darken( $alert-yellow, 15% );
-		}
-
-		&:focus {
-			border-color: darken( $alert-yellow, 15% );
-		}
-
-		&[disabled] {
-			background: lighten( $alert-yellow, 12% ) !important;
-			color: $white !important;
-			border-color: lighten( $alert-yellow, 8% ) !important;
-		}
-	}
-
-	.noticon-checkmark,
-	.noticon-warning {
-		vertical-align: middle;
-		margin-right: 0.25em;
-	}
-
-	.noticon-checkmark {
-		font-size: 18px;
-		margin: 0 1px 0 -3px;
-	}
-
-	.noticon-warning {
-		font-size: 12px;
-		margin: -1px 6px 0 0;
-	}
-
-	.sharing-service__content.is-placeholder .sharing-service-examples,
-	.sharing-service__content.is-placeholder .sharing-service-accounts-detail,
-	.sharing-service__content.is-placeholder .sharing-service-tip {
-		display: none;
 	}
 
 	.sharing-service-example {
@@ -253,10 +283,6 @@ $color-print: #f8f8f8;
 
 .sharing-service__content {
 	position: relative;
-	display: none;
-	padding: 15px 20px 20px 20px;
-	background: lighten( $gray, 30% );
-	border-top: 1px solid lighten( $gray, 20% );
 
 	&.is-placeholder {
 		height: 180px;
@@ -343,7 +369,6 @@ $color-print: #f8f8f8;
 
 .sharing-service__name {
 	clear: none;
-	font-size: 20px;
 }
 
 .sharing-service__description {

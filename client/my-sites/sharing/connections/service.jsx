@@ -14,7 +14,9 @@ var ServiceTip = require( './service-tip' ),
 	notices = require( 'notices' ),
 	sites = require( 'lib/sites-list' )(),
 	serviceConnections = require( './service-connections' ),
-	analytics = require( 'analytics' );
+	analytics = require( 'analytics' ),
+	FoldableCard = require( 'components/foldable-card' ),
+	ServiceLogo = require( './service-logo' );
 
 module.exports = React.createClass( {
 	displayName: 'SharingService',
@@ -206,42 +208,57 @@ module.exports = React.createClass( {
 			this.state.isOpen ? 'is-open' : ''
 		].join( ' ' );
 
-		return (
-			<li className={ elementClass }>
-				<header className="sharing-service__overview" onClick={ this.toggleOpen }>
-					<span className={ 'sharing-service__content-toggle noticon noticon-' + ( this.state.isOpen ? 'collapse' : 'expand' ) } />
+		const header = (
+			<div>
+				<ServiceLogo service={ this.props.service.label } />
 
-					<div className="sharing-service__icon">
-						<span className={ [ 'sharing-service__glyph', 'noticon', 'noticon-' + this.props.service.genericon.class ].join( ' ' ) }></span>
-					</div>
-
-					<h3 className="sharing-service__name">{ this.props.service.label }</h3>
-					<ServiceDescription service={ this.props.service } status={ connectionStatus } numberOfConnections={ connections.length } />
-
-					<ServiceAction
+				<div className="sharing-service__name">
+					<h2>{ this.props.service.label }</h2>
+					<ServiceDescription
+						service={ this.props.service }
 						status={ connectionStatus }
-						service={ this.props.service }
-						onAction={ this.performAction }
-						isConnecting={ this.state.isConnecting }
-						isRefreshing={ this.state.isRefreshing }
-						isDisconnecting={ this.state.isDisconnecting } />
-				</header>
-				<div className={ 'sharing-service__content ' + ( serviceConnections.isFetchingAccounts() ? 'is-placeholder' : '' ) }>
-					<ServiceExamples service={ this.props.service } site={ sites.getSelectedSite() } />
-					<ServiceConnectedAccounts
-						site={ this.props.site }
-						user={ this.props.user }
-						service={ this.props.service }
-						connections={ connections }
-						onAddConnection={ this.connect }
-						onRemoveConnection={ this.disconnect }
-						isDisconnecting={ this.state.isDisconnecting }
-						onRefreshConnection={ this.refresh }
-						isRefreshing={ this.state.isRefreshing }
-						onToggleSitewideConnection={ this.props.onToggleSitewideConnection } />
-					<ServiceTip service={ this.props.service } />
+						numberOfConnections={ connections.length } />
 				</div>
-			</li>
+
+			</div>
+		);
+
+		const content = (
+			<div
+				className={ 'sharing-service__content ' + ( serviceConnections.isFetchingAccounts() ? 'is-placeholder' : '' ) }>
+				<ServiceExamples service={ this.props.service } site={ sites.getSelectedSite() } />
+				<ServiceConnectedAccounts
+					site={ this.props.site }
+					user={ this.props.user }
+					service={ this.props.service }
+					connections={ connections }
+					onAddConnection={ this.connect }
+					onRemoveConnection={ this.disconnect }
+					isDisconnecting={ this.state.isDisconnecting }
+					onRefreshConnection={ this.refresh }
+					isRefreshing={ this.state.isRefreshing }
+					onToggleSitewideConnection={ this.props.onToggleSitewideConnection } />
+				<ServiceTip service={ this.props.service } />
+			</div> );
+
+		const action = (
+			<ServiceAction
+				status={ connectionStatus }
+				service={ this.props.service }
+				onAction={ this.performAction }
+				isConnecting={ this.state.isConnecting }
+				isRefreshing={ this.state.isRefreshing }
+				isDisconnecting={ this.state.isDisconnecting } />
+		);
+		return (
+			<FoldableCard
+				className={ elementClass }
+				header={ header }
+				clickableHeader
+				summary={ action }
+				expandedSummary={ action } >
+				{ content }
+			</FoldableCard>
 		);
 	}
 } );
