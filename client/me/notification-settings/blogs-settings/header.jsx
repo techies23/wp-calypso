@@ -10,7 +10,6 @@ import includes from 'lodash/collection/includes';
 /**
  * Internal dependencies
  */
-import analytics from 'analytics';
 import SiteInfo from 'my-sites/site';
 
 export default React.createClass( {
@@ -20,8 +19,7 @@ export default React.createClass( {
 
 	propTypes: {
 		blog: PropTypes.object.isRequired,
-		settings: PropTypes.instanceOf( Immutable.Map ).isRequired,
-		disableToggle: PropTypes.bool,
+		settings: PropTypes.instanceOf( Immutable.Map ).isRequired
 	},
 
 	getLegend() {
@@ -55,12 +53,12 @@ export default React.createClass( {
 
 	render() {
 		return (
-			<header key={ this.props.blog.wpcom_url } className="notification-settings-blog-settings-header">
+			<div key={ this.props.blog.wpcom_url } className="notification-settings-blog-settings-header">
 				<SiteInfo site={ this.props.blog } indicator={ false }/>
 				<div className="notification-settings-blog-settings-header__legend">
 					<em>{ this.getLegend() }</em>
 				</div>
-			</header>
+			</div>
 		);
 	}
 } );

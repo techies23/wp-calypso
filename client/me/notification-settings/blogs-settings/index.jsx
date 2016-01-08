@@ -8,12 +8,14 @@ import Immutable from 'immutable';
  * Internal dependencies
  */
 import EmptyContentComponent from 'components/empty-content';
+import NoResults from 'my-sites/no-results';
 import Blog from './blog';
 import URLSearch from 'lib/mixins/url-search';
 import SearchCard from 'components/search-card';
 import InfiniteList from 'components/infinite-list';
 import Placeholder from './placeholder';
 import config from 'config';
+import escapeRegexp from 'escape-string-regexp';
 
 export default React.createClass( {
 	displayName: 'BlogsSettings',
@@ -24,8 +26,9 @@ export default React.createClass( {
 		blogs: PropTypes.object.isRequired,
 		devices: PropTypes.object.isRequired,
 		settings: PropTypes.instanceOf( Immutable.List ),
+		search: PropTypes.string,
 		hasUnsavedChanges: PropTypes.bool.isRequired,
-		// onToggle: PropTypes.func.isRequired,
+		onToggle: PropTypes.func.isRequired,
 		onSave: PropTypes.func.isRequired,
 		onSaveToAll: PropTypes.func.isRequired
 	},
@@ -44,7 +47,6 @@ export default React.createClass( {
 				illustration={ '/calypso/images/drake/drake-nosites.svg' } />
 		}
 
-
 		const renderBlog = ( blog, index, disableToggle = false ) => {
 			return (
 				<Blog
@@ -54,7 +56,7 @@ export default React.createClass( {
 					disableToggle={ disableToggle }
 					hasUnsavedChanges={ this.props.hasUnsavedChanges }
 					settings={ this.props.settings.find( settings => settings.get( 'blog_id' ) === blog.ID ) }
-					// onToggle={ this.props.onToggle }
+					onToggle={ this.props.onToggle }
 					onSave={ () => this.props.onSave( blog.ID ) }
 					onSaveToAll={ () => this.props.onSaveToAll( blog.ID ) } />
 			);
@@ -64,16 +66,26 @@ export default React.createClass( {
 			return renderBlog( this.props.blogs.get()[0], null, true );
 		}
 
+		let items = this.props.blogs.get();
+		if ( this.props.search ) {
+			let phrase = new RegExp( escapeRegexp( this.props.search ), 'i' );
+
+			items = items.filter( item => {
+				return item.URL.search( phrase ) !== -1 || item.name.search( phrase ) !== -1;
+			} );
+		}
 
 		return (
-			<div>
+			<div className="notification-settings-blog-settings">
 				<SearchCard
 					autoFocus={ true }
 					delaySearch={ true }
 					placeholder={ this.translate( 'Search your sites' ) }
+					initialValue={ this.props.search }
 					onSearch={ this.doSearch } />
+				{ ( items.length === 0 && this.props.search ) && <NoResults text={ this.translate( 'No sites match that search.' ) } /> }
 				<InfiniteList
-					items={ this.props.blogs.get() }
+					items={ items }
 					lastPage={ true }
 					fetchNextPage={ () => {} }
 					fetchingNextPage={ false }

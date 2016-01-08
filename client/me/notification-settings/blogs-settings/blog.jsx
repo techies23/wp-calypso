@@ -8,7 +8,6 @@ import classNames from 'classnames';
 /**
  * Internal dependencies
  */
-import Card from 'components/card';
 import FoldableCard from 'components/foldable-card';
 import Header from './header';
 import SettingsForm from 'me/notification-settings/settings-form';
@@ -36,7 +35,7 @@ export default React.createClass( {
 	render() {
 		const { blog, blog: { ID: sourceId }, settings, disableToggle, devices, hasUnsavedChanges, onToggle, onSave, onSaveToAll } = this.props;
 		const { isExpanded } = this.state;
-		const styles = classNames( 'notification-settings-blog-settings', {
+		const styles = classNames( 'notification-settings-blog-settings-blog', {
 			'is-compact': ! isExpanded,
 			'is-expanded': isExpanded
 		} );

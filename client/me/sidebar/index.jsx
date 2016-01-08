@@ -51,7 +51,7 @@ module.exports = React.createClass( {
 		if ( filterMap[ filteredPath ] ) {
 			selected = filterMap[ filteredPath ];
 		} else {
-			selected = context.path.split( '/' ).pop();
+			selected = context.path.split( '/' ).pop().split( '?' )[0];
 		}
 
 		return (
@@ -62,7 +62,7 @@ module.exports = React.createClass( {
 
 					<FormButton
 						className="me-sidebar__menu__signout"
-						isPrimary={false}
+						isPrimary={ false }
 						onClick={ this.recordClickEvent( 'Sidebar Sign Out Link', userUtilities.logout ) }
 						title={ this.translate( 'Sign out of WordPress.com', { textOnly: true } ) }
 					>
