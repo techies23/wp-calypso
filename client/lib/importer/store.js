@@ -17,6 +17,7 @@ import { createReducerStore } from 'lib/store';
 const initialState = Immutable.fromJS( {
 	count: 0,
 	importers: {},
+	importerLocks: {},
 	api: {
 		isHydrated: false,
 		isFetching: false,
@@ -29,6 +30,21 @@ const increment = a => a + 1;
 
 const removableStates = [ appStates.CANCEL_PENDING, appStates.DEFUNCT ];
 const shouldRemove = importer => removableStates.some( partial( equals, importer.get( 'importerState' ) ) );
+
+const adjustImporterLock = ( state, { action } ) => {
+	switch ( action.type ) {
+		case actionTypes.LOCK_IMPORT:
+			console.log( `Freezing importer ${ action.importerId }` );
+			return state.setIn( [ 'importerLocks', action.importerId ], true );
+
+		case actionTypes.UNLOCK_IMPORT:
+			console.log( `Unfreezing importer ${ action.importerId }` );
+			return state.setIn( [ 'importerLocks', action.importerId ], false );
+
+		default:
+			return state;
+	}
+}
 
 const ImporterStore = createReducerStore( function( state, payload ) {
 	let { action } = payload,
@@ -101,8 +117,11 @@ const ImporterStore = createReducerStore( function( state, payload ) {
 			break;
 
 		case actionTypes.RECEIVE_IMPORT_STATUS:
-			newState = state
-				.setIn( [ 'api', 'isHydrated' ], true );
+			newState = state.setIn( [ 'api', 'isHydrated' ], true );
+
+			if ( newState.getIn( [ 'importerLocks', action.importerStatus.importerId ], false ) ) {
+				break;
+			}
 
 			if ( action.importerStatus.importerState === appStates.DEFUNCT ) {
 				break;
@@ -114,13 +133,9 @@ const ImporterStore = createReducerStore( function( state, payload ) {
 			break;
 
 		case actionTypes.SET_UPLOAD_PROGRESS:
-			newState = state.update( 'importers', importers => importers.map( importer => {
-				if ( action.importerId !== importer.get( 'importerId' ) ) {
-					return importer;
-				}
-
-				return importer.set( 'percentComplete', action.uploadLoaded / ( action.uploadTotal + Number.EPSILON ) * 100 );
-			} ) );
+			newState = state.setIn( [ 'importers', action.importerId, 'percentComplete' ],
+				action.uploadLoaded / ( action.uploadTotal + Number.EPSILON ) * 100
+			);
 			break;
 
 		case actionTypes.START_IMPORT:
@@ -152,6 +167,8 @@ const ImporterStore = createReducerStore( function( state, payload ) {
 			newState = state;
 			break;
 	}
+
+	newState = adjustImporterLock( newState, payload );
 
 	return newState;
 }, initialState );

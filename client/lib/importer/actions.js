@@ -25,6 +25,7 @@ const apiFailure = data => {
 
 	return data;
 };
+const lockImport = importerId => Dispatcher.handleViewAction( { type: actionTypes.LOCK_IMPORT, importerId } );
 
 const asArray = a => [].concat( a );
 
@@ -109,6 +110,8 @@ export function setState( newState ) {
 }
 
 export function startMappingAuthors( importerId ) {
+	lockImport( importerId );
+
 	Dispatcher.handleViewAction( {
 		type: actionTypes.START_MAPPING_AUTHORS,
 		importerId
