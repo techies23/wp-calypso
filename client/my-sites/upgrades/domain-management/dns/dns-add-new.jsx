@@ -27,6 +27,7 @@ import { validateAllFields, getNormalizedData } from 'lib/domains/dns';
 
 const DnsAddNew = React.createClass( {
 	propTypes: {
+		isSubmittingForm: React.PropTypes.bool.isRequired,
 		selectedDomainName: React.PropTypes.string.isRequired
 	},
 
@@ -162,7 +163,7 @@ const DnsAddNew = React.createClass( {
 
 				<FormFooter>
 					<FormButton
-						disabled={ formState.isSubmitButtonDisabled( this.state.fields ) }
+						disabled={ formState.isSubmitButtonDisabled( this.state.fields ) || this.props.isSubmittingForm }
 						onClick={ this.onAddDnsRecord }>
 						{ this.translate( 'Add New DNS Record' ) }
 					</FormButton>
@@ -170,6 +171,7 @@ const DnsAddNew = React.createClass( {
 					{ this.state.show && <FormButton
 						type="button"
 						isPrimary={ false }
+						disabled={ this.props.isSubmittingForm }
 						onClick={ this.onCancel }>
 						{ this.translate( 'Cancel' ) }
 					</FormButton> }
