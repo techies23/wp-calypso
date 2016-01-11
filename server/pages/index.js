@@ -369,7 +369,7 @@ module.exports = function() {
 		}
 	} );
 
-	app.get( '/design', function( req, res ) {
+	app.get( '/design(/type/:themeTier)?', function( req, res ) {
 		if ( req.cookies.wordpress_logged_in || ! config.isEnabled( 'manage/themes/logged-out' ) ) {
 			// the user is probably logged in
 			renderLoggedInRoute( req, res );
@@ -377,7 +377,9 @@ module.exports = function() {
 			const context = getDefaultContext( req );
 
 			try {
-				context.layout = ReactDomServer.renderToString( LayoutLoggedOutDesignFactory() );
+				const tier = req.params.themeTier;
+				context.layout = ReactDomServer.renderToString(
+					LayoutLoggedOutDesignFactory( { tier } ) );
 			} catch ( ex ) {
 				if ( config( 'env' ) === 'development' ) {
 					throw ex;
