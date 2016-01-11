@@ -672,7 +672,7 @@ function setVolume( cartItem, volume ) {
 	}
 
 	return function( cart ) {
-		return React.addons.update( cart, { products: { $apply: setItemVolume } } );
+		return update( cart, { products: { $apply: setItemVolume } } );
 	};
 }
 
@@ -713,8 +713,8 @@ module.exports = {
 	hasPlan,
 	hasProduct,
 	hasRenewalItem,
-	setVolume: setVolume,
-	isPrivacyProduct: isPrivacyProduct,
+	setVolume,
+	isPrivacyProduct,
 	noAdsItem,
 	planItem,
 	premiumPlan,
