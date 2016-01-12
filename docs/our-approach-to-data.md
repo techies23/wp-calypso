@@ -41,7 +41,7 @@ __Advantages:__
 
 ### Third Era: Redux Global State Tree (December 2015 - Present)
 
-[Redux](http://redux.js.org/), described as a "predictable state container", is an evolution of the principles advocated in Flux. It is not a far departure from Flux, but is unique in many ways:
+[Redux](http://redux.js.org/), described as a "predictable state container", is an evolution of the principles advocated in Flux. It is not a far departure from Flux, but is distinct in many ways:
 
 - There is typically a single store instance which maintains all state for the entire application
 - Action creators do not call to the global dispatcher directly, but rather return simple action objects which can be passed to the [store `dispatch` method](http://rackt.org/redux/docs/api/Store.html#dispatch)
