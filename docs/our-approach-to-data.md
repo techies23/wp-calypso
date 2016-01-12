@@ -97,7 +97,13 @@ client/state/
 
 For example, the reducer responsible for maintaining the `state.sites` key within the global state can be found in `client/state/sites/reducer.js`. It's quite common that the subject reducer is itself a combined reducer. Just as it helps to split the global state into subdirectories responsible for their own part of the tree, as a subject grows, you may find that it's easier to maintain pieces as nested subdirectories. This ease of composability is one of Redux's strengths.
 
-As you build your piece of the state and introduce new behaviors, action type constants should be added to `action-types.js` in the root `state` directory. Action types are considered global such that any state subtree's reducer can react to any action types dispatched through the system.
+### Actions
+
+An action describes an intent to change the state of the application. When an action object is [dispatched](http://redux.js.org/docs/api/Store.html#dispatch) to an instance of a Redux store, the reducer function for that store is called with the action. Given the structure of our application state, specific subtrees can maintain their own state in response to any actions for which they are concerned.
+
+An action object should contain a `type` key describing the action. All action types are defined in [`state/action-types.js`](https://github.com/Automattic/wp-calypso/blob/master/client/state/action-types.js). For example, to describe the intent of changing the state to include a few new post objects, you might create an action with the type `POSTS_RECEIVE`. Any other relevant properties can be included in this object if they are needed by the reducer function handler.
+
+As mentioned above, new actions should be added to `action-types.js`. Action types are considered global such that any state subtree's reducer can react to any action types dispatched through the system. The file should remain alphabetized, and we recommend suffixing the verb so that all actions within the same domain scope are in relative proximity. For example, rather than naming your actions `FETCH_POSTS` AND `RECEIVE_POSTS`, you should name them `POSTS_FETCH` AND `POSTS_RECEIVE`.
 
 ### Data Normalization
 
