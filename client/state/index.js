@@ -12,6 +12,7 @@ import notices from './notices/reducer';
 import sharing from './sharing/reducer';
 import sites from './sites/reducer';
 import siteSettings from './site-settings/reducer'
+import stats from './stats/reducer';
 import themes from 'lib/themes/reducers';
 import ui from './ui/reducer';
 
@@ -23,6 +24,7 @@ const reducer = combineReducers( {
 	sharing,
 	sites,
 	siteSettings,
+	stats,
 	themes,
 	ui
 } );
