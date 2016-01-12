@@ -178,7 +178,7 @@ export default React.createClass( {
 					key={ 'statusTabs' + path }
 					path={ path }
 					count={ null === this.props.sites.selected || isJetpackSite ?
-						false :
+						null :
 						count
 					}
 					value={ textItem }
