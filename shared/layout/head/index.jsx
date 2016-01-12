@@ -12,26 +12,31 @@ import { decodeEntities } from 'lib/formatting';
 
 const debug = debugFactory( 'calypso:layout:head' );
 
-const Head = ( { title, description, canonicalUrl } ) => (
-	<Helmet
-		title={ buildTitle( title ) }
-		meta={ [
-			{ name: 'description', property: 'og:description', content: description },
-			{ property: 'og:title', content: title },
-			{ property: 'og:url', content: canonicalUrl },
-		] }
-		link={ [
-			{ rel: 'canonical', href: canonicalUrl }
-		] }
-		onChangeClientState={ debug }
-	/>
+const Head = ( { title, isTitleFormatted, description, canonicalUrl, children } ) => (
+	<div>
+		<Helmet
+			title={ isTitleFormatted ? title : buildTitle( title ) }
+			meta={ [
+				description ? { name: 'description', property: 'og:description', content: description } : {},
+				title ? { property: 'og:title', content: title } : {},
+				canonicalUrl ? { property: 'og:url', content: canonicalUrl } : {},
+			] }
+			link={ [
+				canonicalUrl ? { rel: 'canonical', href: canonicalUrl } : {}
+			] }
+			onChangeClientState={ debug }
+		/>
+		{ children }
+	</div>
 );
 
 Head.displayName = 'Head';
 Head.propTypes = {
 	title: React.PropTypes.string,
+	isTitleFormatted: React.PropTypes.bool,
 	description: React.PropTypes.string,
 	canonicalUrl: React.PropTypes.string,
+	children: React.PropTypes.node,
 };
 
 // TODO: use `lib/screen-title/utils`, which currently depends on sites-list
