@@ -8,8 +8,9 @@ import page from 'page';
  * Internal dependencies
  */
 import Main from 'components/main';
-import PlanFeatures from 'my-sites/plans/plan-overview/plan-features';
-import PlanStatus from 'my-sites/plans/plan-overview/plan-status';
+import PlanFeatures from './plan-features';
+import PlanRemove from './plan-remove';
+import PlanStatus from './plan-status';
 import Notice from 'components/notice';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
 import UpgradesNavigation from 'my-sites/upgrades/navigation';
@@ -63,6 +64,10 @@ const PlanOverview = React.createClass( {
 						selectedSite={ this.props.selectedSite } />
 
 					<PlanFeatures
+						plan={ this.props.plan }
+						selectedSite={ this.props.selectedSite } />
+
+					<PlanRemove
 						plan={ this.props.plan }
 						selectedSite={ this.props.selectedSite } />
 				</Main>
