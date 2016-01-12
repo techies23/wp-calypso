@@ -29,12 +29,15 @@ EditorMediaAdvanced.defaultProps = {
 	toggleVisible: () => {}
 };
 
-export default connect( ( state ) => {
-	return {
-		visible: state.ui.editor.media.advanced
-	};
-}, ( dispatch ) => {
-	return bindActionCreators( {
-		toggleVisible: toggleEditorMediaAdvanced
-	}, dispatch );
-} )( EditorMediaAdvanced );
+export default connect(
+	( state ) => {
+		return {
+			visible: state.ui.editor.media.advanced
+		};
+	},
+	( dispatch ) => {
+		return bindActionCreators( {
+			toggleVisible: toggleEditorMediaAdvanced
+		}, dispatch );
+	}
+)( EditorMediaAdvanced );
