@@ -17,7 +17,7 @@ const ThemesHead = ( { tier } ) => (
 )
 
 ThemesHead.propTypes = {
-	tier: React.PropTypes.string
+	tier: React.PropTypes.string.isRequired
 };
 
 const themesMeta = {
