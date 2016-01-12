@@ -1,7 +1,7 @@
-Shared
+Server Side Rendering
 ======
 
-Contains any code that can be used both in a Calypso client (browser or desktop) and the Calypso Node server. Generally, any module in this folder will have either no client-specific dependencies (such as the DOM), or differing entry points for client and server specified in its `package.json` file, like this:
+Something something on the server.
 
 ```
 {
@@ -25,24 +25,3 @@ React components used on the server will be rendered to HTML by being passed to 
 
 * Libraries that are used on the server should be mindful of the DOM not being available on the server, and should either: be modified to work without the DOM; have non-DOM specific fallbacks; or fail in an obvious manner.
 * Singletons should be avoided, as once instantiated they will persist for the entire duration of the `node` process.
-
-## Subfolders
-
-#### components
-
-The `/components` folder holds reusable React components that will render both client- and server-side. Most reusable components should be rendered at `/devdocs/design` for reference.
-
-#### dispatcher
-
-The Calypso Flux dispatcher, a wrapper for https://github.com/facebook/flux/blob/master/src/Dispatcher.js.
-
-#### lib
-
-Utils and libraries that can be used both client- and sever-side.
-
-#### my-sites
-
-Any isomorphic modules specific to the site admin section of Calypso.
-
-
-
