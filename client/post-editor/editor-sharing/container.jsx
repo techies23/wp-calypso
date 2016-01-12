@@ -83,7 +83,6 @@ class EditorSharingContainer extends Component {
 
 EditorSharingContainer.propTypes = {
 	site: PropTypes.object,
-	currentUserID: PropTypes.number.isRequired,
 	dispatch: PropTypes.func.isRequired,
 	hasFetchedConnections: PropTypes.bool,
 	connections: PropTypes.array
