@@ -203,15 +203,18 @@ function PostDeleteButton( { label, delete } ) {
 	);
 }
 
-export default connect( ( state, ownProps ) => {
-	return {
-		label: getSitePost( ownProps.siteId, ownProps.postId ).title
-	};
-}, ( dispatch, ownProps ) => {
-	return {
-		delete: () => dispatch( deleteSitePost( ownProps.siteId, ownProps.postId ) )
-	};
-} )( PostDeleteButton );
+export default connect(
+	( state, ownProps ) => {
+		return {
+			label: getSitePost( ownProps.siteId, ownProps.postId ).title
+		};
+	},
+	( dispatch, ownProps ) => {
+		return {
+			delete: () => dispatch( deleteSitePost( ownProps.siteId, ownProps.postId ) )
+		};
+	}
+)( PostDeleteButton );
 ```
 
 At this point, you might observe that the visual elements rendered in `<PostDeleteButton />` aren't very specific to posts and could probably be reused in different contexts. This is a good observation to make, and in this case it might make sense to split the visual component to its own separate file (e.g. `client/components/delete-button/index.jsx`). You should try to identify these opportunities as often as possible. Since the `connect` wrapping function is detached from the component declaration in the file above, it should not be difficult to separate the two.
@@ -239,15 +242,18 @@ class PostsData extends Component {
 	}
 }
 
-export default connect( ( state, ownProps ) => {
-	return {
-		posts: getSitePosts( ownProps.siteId )
-	};
-}, ( dispatch ) => {
-	return bindActionCreators( {
-		fetchPosts
-	}, dispatch );
-} )( PostsData );
+export default connect(
+	( state, ownProps ) => {
+		return {
+			posts: getSitePosts( ownProps.siteId )
+		};
+	},
+	( dispatch ) => {
+		return bindActionCreators( {
+			fetchPosts
+		}, dispatch );
+	}
+)( PostsData );
 ```
 
 `client/my-sites/controller.js`
