@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import escapeRegExp from 'lodash/string/escapeRegExp';
 import findIndex from 'lodash/array/findIndex';
 import isUndefined from 'lodash/lang/isUndefined';
 import update from 'react-addons-update';
@@ -22,15 +21,13 @@ function updateDomainState( state, domainName, dns ) {
 }
 
 function addDns( state, domainName, record ) {
-	const domainSuffix = new RegExp( '\\.' + escapeRegExp( domainName ) + '\\.$' ),
-		newRecord = Object.assign( {}, record, {
-			name: record.name.replace( domainSuffix, '' )
-		} );
+	const newRecord = Object.assign( {}, record, {
+		isBeingAdded: true
+	} );
 
 	return update( state, {
 		[ domainName ]: {
-			records: { $push: [ newRecord ] },
-			isSubmittingForm: { $set: false }
+			records: { $push: [ newRecord ] }
 		}
 	} );
 }
@@ -49,11 +46,9 @@ function deleteDns( state, domainName, record ) {
 	return update( state, command );
 }
 
-function markDnsForDeletion( state, domainName, record, { isBeingDeleted } ) {
+function updateDnsState( state, domainName, record, updatedFields ) {
 	const index = findDnsIndex( state[ domainName ].records, record ),
-		updatedRecord = Object.assign( {}, record, {
-			isBeingDeleted,
-		} );
+		updatedRecord = Object.assign( {}, record, updatedFields );
 
 	if ( index === -1 ) {
 		return state;
@@ -81,7 +76,6 @@ function getInitialStateForDomain() {
 	return {
 		isFetching: false,
 		hasLoadedFromServer: false,
-		isSubmittingForm: false,
 		records: null
 	};
 }
@@ -108,20 +102,18 @@ function reducer( state, payload ) {
 			} );
 			break;
 		case ActionTypes.DNS_ADD:
-			state = updateDomainState( state, action.domainName, {
-				isSubmittingForm: true
-			} );
-			break;
-		case ActionTypes.DNS_ADD_COMPLETED:
 			state = addDns( state, action.domainName, action.record );
 			break;
-		case ActionTypes.DNS_ADD_FAILED:
-			state = updateDomainState( state, action.domainName, {
-				isSubmittingForm: false
+		case ActionTypes.DNS_ADD_COMPLETED:
+			state = updateDnsState( state, action.domainName, action.record, {
+				isBeingAdded: false
 			} );
 			break;
+		case ActionTypes.DNS_ADD_FAILED:
+			state = deleteDns( state, action.domainName, action.record );
+			break;
 		case ActionTypes.DNS_DELETE:
-			state = markDnsForDeletion( state, action.domainName, action.record, {
+			state = updateDnsState( state, action.domainName, action.record, {
 				isBeingDeleted: true
 			} );
 			break;
@@ -129,7 +121,7 @@ function reducer( state, payload ) {
 			state = deleteDns( state, action.domainName, action.record );
 			break;
 		case ActionTypes.DNS_DELETE_FAILED:
-			state = markDnsForDeletion( state, action.domainName, action.record, {
+			state = updateDnsState( state, action.domainName, action.record, {
 				isBeingDeleted: false
 			} );
 			break;

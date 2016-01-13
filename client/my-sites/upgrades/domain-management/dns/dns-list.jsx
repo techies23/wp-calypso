@@ -8,7 +8,7 @@ import React from 'react';
  */
 import DnsRecord from './dns-record';
 import notices from 'notices';
-import { deleteDns as deleteDnsAction } from 'lib/upgrades/actions';
+import { deleteDns as deleteDnsAction, addDns as addDnsAction } from 'lib/upgrades/actions';
 
 const DnsList = React.createClass( {
 	propTypes: {
@@ -24,6 +24,22 @@ const DnsList = React.createClass( {
 		deleteDnsAction( this.props.selectedDomainName, record, ( error ) => {
 			if ( error ) {
 				notices.error( error.message || this.translate( 'The DNS record has not been deleted.' ) );
+			} else {
+				const notice = notices.success( this.translate( 'The DNS record has been deleted.' ), {
+					button: this.translate( 'Undo' ),
+					onClick: () => {
+						notices.removeNotice( notice );
+						this.addDns( record );
+					}
+				} );
+			}
+		} );
+	},
+
+	addDns: function( record ) {
+		addDnsAction( this.props.selectedDomainName, record, ( error ) => {
+			if ( error ) {
+				notices.error( error.message );
 			}
 		} );
 	},
