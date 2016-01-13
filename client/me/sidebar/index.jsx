@@ -112,6 +112,12 @@ module.exports = React.createClass( {
 					<li className="sidebar-menu me-extras">
 						<h2 className="sidebar-heading">{ this.translate( 'Special' ) }</h2>
 						<ul>
+							<MenuItem
+								selected={ selected === 'apps' }
+								href={ '/me/apps' }
+								label={ this.translate( 'Get Apps' ) }
+								icon="my-sites"
+							/>
 							{ this.renderNextStepsItem( selected ) }
 							<MenuItem
 								selected={ selected === 'help' }
