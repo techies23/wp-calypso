@@ -18,7 +18,7 @@ import { isBusiness, isPremium } from 'lib/products-values';
 /**
  * Module variables
  */
-let hasLoadedScripts = false,
+let hasFetchedScripts = false,
 	retargetingInitialized = false;
 
 /**
@@ -87,6 +87,8 @@ function setUpFacebookGlobal() {
 }
 
 function loadTrackingScripts( callback ) {
+	hasFetchedScripts = true;
+
 	async.parallel( [
 		function( onComplete ) {
 			loadScript.loadScript( FACEBOOK_TRACKING_SCRIPT_URL, onComplete );
@@ -99,8 +101,6 @@ function loadTrackingScripts( callback ) {
 		}
 	], function( errors ) {
 		if ( ! some( errors ) ) {
-			hasLoadedScripts = true;
-
 			// update Facebook's tracking global
 			window.fbq( 'init', TRACKING_IDS.facebookInit );
 
@@ -114,7 +114,7 @@ function loadTrackingScripts( callback ) {
 }
 
 function retarget() {
-	if ( ! hasLoadedScripts ) {
+	if ( ! hasFetchedScripts ) {
 		return loadTrackingScripts( retarget );
 	}
 
@@ -127,7 +127,7 @@ function retarget() {
 }
 
 function recordAddToCart( cartItem ) {
-	if ( ! hasLoadedScripts ) {
+	if ( ! hasFetchedScripts ) {
 		return loadTrackingScripts( recordAddToCart.bind( null, cartItem ) );
 	}
 
@@ -146,7 +146,7 @@ function recordAddToCart( cartItem ) {
 function recordPurchase( product ) {
 	let type;
 
-	if ( ! hasLoadedScripts ) {
+	if ( ! hasFetchedScripts ) {
 		return loadTrackingScripts( recordPurchase.bind( null, product ) );
 	}
 
