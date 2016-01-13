@@ -369,14 +369,10 @@ export default React.createClass( {
 	 * Return count of the given status
 	 *
 	 * @param {String} status - status type
-	 * @return {String|Boolean} return count of the given status
+	 * @return {Number|Null} return count of the given status
 	 */
 	getCountByStatus( status ) {
-		var count = null;
-		if ( false !== this.state.counts[ status ] ) {
-			count = this.numberFormat( this.state.counts[ status ] );
-		}
-
-		return count;
+		let count = this.state.counts[ status ];
+		return ( count !== false ) ? count : null;
 	}
 } );
