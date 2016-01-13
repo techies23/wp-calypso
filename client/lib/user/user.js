@@ -238,17 +238,28 @@ User.prototype.set = function( attributes ) {
 	return changed;
 };
 
-User.prototype.changeUser = function( username, password ) {
+User.prototype.changeUser = function( username, password, callback ) {
 	if ( config.isEnabled( 'support-user' ) ) {
 		wpcom.changeUser( username, password, function( error ) {
 			if ( ! error ) {
 				this.fetch();
 			}
+			callback( error );
 		}.bind( this ) );
 	}
 };
+
+User.prototype.restoreUser = function() {
+	if ( config.isEnabled( 'support-user' ) ) {
+		wpcom.restoreUser();
+
+		this.fetch();
+	}
+}
 
 /**
  * Expose `User`
  */
 module.exports = User;
+
+require( './dev-support-user' );
