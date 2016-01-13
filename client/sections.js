@@ -61,6 +61,11 @@ sections = [
 		enableLoggedOut: true
 	},
 	{
+		name: 'start-trial',
+		paths: [ '/start-trial' ],
+		module: 'my-sites/trials'
+	},
+	{
 		name: 'stats',
 		paths: [ '/stats' ],
 		module: 'my-sites/stats'
