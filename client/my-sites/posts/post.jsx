@@ -393,7 +393,10 @@ module.exports = React.createClass({
 					onDelete={ this.deletePost }
 					onRestore={ this.restorePost }
 				/>
-				<ReactCSSTransitionGroup transitionName="updated-trans">
+				<ReactCSSTransitionGroup
+					transitionName="updated-trans"
+					transitionEnterTimeout={ 300 }
+					transitionLeaveTimeout={ 300 }>
 					{ this.buildUpdateTemplate() }
 				</ReactCSSTransitionGroup>
 			</Card>
