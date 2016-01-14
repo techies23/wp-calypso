@@ -25,18 +25,20 @@
 		}
 
 		.stats-all-time__best-day {
+			box-sizing: border-box;
 			color: $gray-dark;
+			display: block;
 			font-size: 11px;
 			letter-spacing: 0.1em;
+			padding: 30px 0 10px 25px;
+			text-align: left;
 			text-transform: uppercase;
+			width: 100%;
 
-			@include breakpoint( "<480px" )  {
-				box-sizing: border-box;
-				display: block;
-				line-height: 1.7;
-				padding: 25px 0 10px 25px;
-				text-align: left;
-				width: 100%;
+			@include breakpoint( ">480px" )  {
+				margin: 5px 0 10px 0;
+				padding: 0;
+				text-align: center;
 			}
 		}
 	}
