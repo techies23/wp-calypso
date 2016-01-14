@@ -23,6 +23,8 @@ function canDeleteSite( site ) {
 	return site.capabilities && site.capabilities.manage_options && ! site.jetpack && ! site.is_vip;
 }
 
+const siteSecuritySettingsRegex = /settings\/security\/\S+/gi;
+
 module.exports = {
 
 	redirectToGeneral: function() {
@@ -179,6 +181,12 @@ module.exports = {
 			'billing-history-v2': '/me/billing',
 			'connected-apps': '/me/security/connected-applications'
 		};
+
+		//if we came from /security/settings/mypage redirect to general settings
+		//instead of /me/security
+		if ( section === 'security' && siteSecuritySettingsRegex.test( context.prevPath ) ) {
+			return page.redirect( '/settings/general' );
+		}
 		if ( redirectMap[ section ] ) {
 			return page.redirect( redirectMap[ section ] );
 		}
